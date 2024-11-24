@@ -2,6 +2,7 @@
 #include"Doctor.h"
 #include <cstring>
 #include"doctorFunctions.h"
+#include"appointmentFunctions.h"
 using namespace std;
 
 

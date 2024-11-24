@@ -6,4 +6,5 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(HealthCareManagementSystem main.cpp
         Doctor.h
         doctorFunctions.h
+        appointmentFunctions.h
 )
