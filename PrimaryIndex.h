@@ -29,6 +29,43 @@ class PrimaryIndex {
     vector<PrimaryIndexNode> primaryIndex;
 
 public:
+    void loadPrimaryIndexInMemory(const string &fileName) {
+        ifstream file(fileName, ios::in);
+        if (!file.is_open()) {
+            cerr << "Error opening file: PrimaryIndex.txt\n";
+            return;
+        }
+        if (isFileEmpty(fileName)) {
+            return;
+        }
+
+        string line;
+        while (getline(file, line)) {
+
+            istringstream recordStream(line);
+            string primaryKey, offset;
+
+            getline(recordStream, primaryKey, '|');
+            getline(recordStream, offset, '|');
+
+            primaryIndex.emplace_back(primaryKey, stoi(offset)); // Save the correct offset.
+        }
+
+        file.close();
+    }
+
+    void updatePrimaryIndexFile(const string &fileName) {
+        fstream outFile(fileName, ios::out | ios::trunc);
+        if (!outFile.is_open()) {
+            cerr << "Error opening file: PrimaryIndex.txt\n";
+            return;
+        }
+        for (const auto &ele: primaryIndex) {
+            outFile << ele.primaryKey << '|' << ele.offset << '\n';
+        }
+        outFile.close();
+    }
+
     string getNewId() {
         if (primaryIndex.empty()) {
             return "1";
@@ -86,43 +123,6 @@ public:
             }
         }
         return -1;
-    }
-
-    void loadPrimaryIndexInMemory(const string &fileName) {
-        ifstream file(fileName, ios::in);
-        if (!file.is_open()) {
-            cerr << "Error opening file: PrimaryIndex.txt\n";
-            return;
-        }
-        if (isFileEmpty(fileName)) {
-            return;
-        }
-
-        string line;
-        while (getline(file, line)) {
-
-            istringstream recordStream(line);
-            string primaryKey, offset;
-
-            getline(recordStream, primaryKey, '|');
-            getline(recordStream, offset, '|');
-
-            primaryIndex.emplace_back(primaryKey, stoi(offset)); // Save the correct offset.
-        }
-
-        file.close();
-    }
-
-    void updatePrimaryIndexFile(const string &fileName) {
-        fstream outFile(fileName, ios::out | ios::trunc);
-        if (!outFile.is_open()) {
-            cerr << "Error opening file: PrimaryIndex.txt\n";
-            return;
-        }
-        for (const auto &ele: primaryIndex) {
-            outFile << ele.primaryKey << '|' << ele.offset << '\n';
-        }
-        outFile.close();
     }
 
     void printPrimaryIndex() {
