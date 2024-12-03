@@ -12,7 +12,7 @@ void checkContinue() {
     }
 }
 
-void trim(std::string &str) {
+void trim(string &str) {
     if (str.empty()) {
         return; // Handle empty string case
     }
@@ -36,8 +36,6 @@ void trim(std::string &str) {
 }
 
 int main() {
-
-
 
     cout << "Welcome to Your Health Care Management System\n";
     int choice = -1;
