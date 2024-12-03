@@ -7,6 +7,7 @@ class DoctorSecondaryIndex {
 public:
     string doctorName;
     vector<string> doctorIDs;  // Handles duplicate names
+
     bool operator < (const DoctorSecondaryIndex& other){ // overload operator <
         return this->doctorName < other.doctorName ;
     }

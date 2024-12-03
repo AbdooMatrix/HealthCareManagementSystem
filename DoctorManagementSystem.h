@@ -13,8 +13,9 @@ using namespace std;
 class DoctorManagementSystem {
 private:
     vector<DoctorPrimaryIndex> primaryIndex;  // Primary index for Doctor ID
-    vector<DoctorSecondaryIndex> secondaryIndex;  // Secondary index for Doctor Name
+    map<string,vector<string>> secondaryIndex;  // Secondary index for Doctor Name
     AvailList availList;
+
 public:
     DoctorManagementSystem() {
         loadPrimaryIndexInMemory();
@@ -30,9 +31,13 @@ public:
         }
     }
 
-    void sortIndexes() {
+    void sortPrimaryIndex() {
         sort(primaryIndex.begin(), primaryIndex.end());
-        sort(secondaryIndex.begin(), secondaryIndex.end());
+    }
+    void sortSecondaryIndex(){
+        for(auto& ele : secondaryIndex){
+            sort(ele.second.begin() , ele.second.end()) ;
+        }
     }
 
     static bool isFileEmpty(const string &filename) {
@@ -64,6 +69,30 @@ public:
 
         file.close();
     }
+
+    void loadSecondaryIndexInMemory(){
+        ifstream file("DoctorSecondaryIndex.txt", ios::in);
+        if (!file.is_open()) {
+            cerr << "Error opening file: DoctorPrimaryIndex.txt\n";
+            return;
+        }
+        if (isFileEmpty("DoctorPrimaryIndex.txt")) {
+            return;
+        }
+        string line;
+        while (getline(file, line)) {
+            istringstream recordStream(line);
+            string name, id;
+            vector<string> vec ;
+            secondaryIndex.insert({name , vec}) ;
+            while(getline(recordStream , id   , ',')){
+                secondaryIndex[name].push_back(id) ;
+            }
+        }
+        file.close();
+        sortSecondaryIndex() ;
+    }
+
 
     void updatePrimaryIndexFile() {
         fstream outFile("DoctorPrimaryIndex.txt", ios::out | ios::trunc);
@@ -177,7 +206,11 @@ public:
 
         primaryIndex.emplace_back(doctor.id, offset);
         updatePrimaryIndexFile();
-        sortIndexes();
+
+
+
+        sortPrimaryIndex() ;
+        sortSecondaryIndex();
     }
 
 
@@ -271,7 +304,8 @@ public:
             return entry.doctorID == id;
         });
         primaryIndex.erase(it, primaryIndex.end());
-        sortIndexes() ;
+        sortPrimaryIndex() ;
+        sortSecondaryIndex() ;
         updatePrimaryIndexFile();
     }
 
