@@ -12,16 +12,18 @@ using namespace std;
 class DoctorManagementSystem {
 private:
     PrimaryIndex doctorPrimaryIndex;  // Primary index for Doctor ID
+    SecondaryIndex doctorSecondaryIndex;
     AvailList doctorAvailList;
 
 public:
     DoctorManagementSystem() {
         doctorPrimaryIndex.loadPrimaryIndexInMemory("DoctorPrimaryIndex.txt");
+        doctorSecondaryIndex.loadSecondaryIndexInMemory("DoctorSecondaryIndex.txt");
         doctorAvailList.loadAvailListInMemory("doctors.txt");
     }
 
     void addDoctor(Doctor &doctor) {
-        doctor.id = doctorPrimaryIndex.getNewId();
+        doctor.id = doctorPrimaryIndex.getNewId(); //wessam ali -->   9
 
         fstream file("doctors.txt", ios::in | ios::out);
         if (!file.is_open()) {
@@ -80,21 +82,21 @@ public:
         file.close();
 
         doctorPrimaryIndex.addPrimaryNode(doctor.id, offset, "DoctorPrimaryIndex.txt");
+        doctorSecondaryIndex.addPrimaryKeyInSecondaryNode(doctor.name, doctor.id, "DoctorSecondaryIndex.txt");
     }
 
     void updateDoctorName(const string &id, string &newName) {
         int offset = doctorPrimaryIndex.binarySearchPrimaryIndex(id);
 
         if (offset == -1) {
-            cout << "Doctor with ID: " << id << " does not exist.\n";
+            cerr << "Error: Doctor ID not found in primary index.\n";
             return;
         }
         fstream doctorFile("doctors.txt", ios::in | ios::out);
         if (!doctorFile.is_open()) {
-            cout << "Error: Could not open the file.\n";
+            cerr << "Error: Could not open doctors.txt file.\n";
             return;
         }
-
         // Move to the specific offset
         doctorFile.seekg(offset, ios::beg);
 
@@ -114,12 +116,13 @@ public:
         int oldSize = static_cast<int>(name.size());
         int newSize = static_cast<int>(newName.size());
 
+
         if (newSize <= oldSize) {
-            doctorFile.seekp(offset + 7, ios::beg);
-
-            int padding = oldSize - newSize;
-            newName.append(padding, '-');
-
+            doctorSecondaryIndex.removePrimaryKeyFromSecondaryNode(name, id, "DoctorSecondaryIndex.txt");
+            doctorSecondaryIndex.addPrimaryKeyInSecondaryNode(newName, id, "DoctorSecondaryIndex.txt");
+            size_t nameOffset = offset + status.size() + recordLen.size() + record_id.size() + 3; // Adjust dynamically
+            doctorFile.seekp(nameOffset, ios::beg);
+            newName.resize(oldSize, '-'); // Ensure consistent size
             doctorFile.write(newName.c_str(), oldSize);
 
         } else {
@@ -129,6 +132,7 @@ public:
             doctor.name = newName;
             doctor.address = address;
             addDoctor(doctor);
+
         }
         cout << "Doctor's name updated successfully.\n";
 
@@ -152,12 +156,22 @@ public:
         doctorFile.seekp(offset, ios::beg);
 
         doctorFile.put('*'); // Overwrite the status byte with '*'
+        doctorFile.seekg(-1, ios::cur);
 
-        doctorFile.seekg(offset + 2, ios::beg);
+        string line;
+        getline(doctorFile, line); // Read the record at the offset
 
-        string lengthString;
-        getline(doctorFile, lengthString, '|'); // get length indicator from record
-        int lengthIndicator = stoi(lengthString); // Convert the string to an integer
+        istringstream recordStream(line);
+        string status, recordLen, record_id, name, address;
+
+        // Parse the record
+        getline(recordStream, status, '|');
+        getline(recordStream, recordLen, '|');
+        getline(recordStream, record_id, '|');
+        getline(recordStream, name, '|');
+        getline(recordStream, address, '|');
+
+        int lengthIndicator = stoi(recordLen); // Convert the string to an integer
 
         cout << "Doctor with ID " << id << " has been marked as deleted.\n";
 
@@ -169,6 +183,7 @@ public:
 
         // Remove the doctor from the primary index and update the file
         doctorPrimaryIndex.removePrimaryNode(id, "DoctorPrimaryIndex.txt");
+        doctorSecondaryIndex.removePrimaryKeyFromSecondaryNode(name, id, "DoctorSecondaryIndex.txt");
     }
 
     void printDoctorInfo(const string &id) {

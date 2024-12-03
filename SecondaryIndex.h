@@ -37,7 +37,7 @@ public:
         }
 
         string line;
-        while (getline(file, line)) { // omar mohamed|1,2,3
+        while (getline(file, line)) {
 
             istringstream recordStream(line);
             string secondaryKey ;
@@ -70,6 +70,7 @@ public:
                     outFile << ',' ;
                 }
             }
+            outFile << '\n' ;
         }
         outFile.close();
     }
@@ -81,18 +82,25 @@ public:
         }
     }
 
-    void addSecondaryNode(const string &secondaryKey, vector<string> & vec , const string &fileName) {
+    void addSecondaryNode(const string &secondaryKey, const string & primaryKey , const string &fileName) {
+        vector<string> vec ;
+        vec.push_back(primaryKey) ;
         secondaryIndex.emplace_back(secondaryKey , vec) ;
         sortSecondaryIndex();
         updateSecondaryIndexFile(fileName);
     }
 
-    void addPrimaryKey(const string &secondaryKey, string primarykey , const string &fileName)
+    void addPrimaryKeyInSecondaryNode(const string &secondaryKey, const string &primarykey , const string &fileName)
     {
         int index = binarySearchSecondaryIndex(secondaryKey) ;
-        secondaryIndex[index].primaryKeys.emplace_back(primarykey) ;
-        sortSecondaryIndex() ;
-        updateSecondaryIndexFile(fileName) ;
+        if(index == -1){
+            addSecondaryNode(secondaryKey , primarykey , fileName) ;
+        }
+        else{
+            secondaryIndex[index].primaryKeys.emplace_back(primarykey) ;
+            sortSecondaryIndex() ;
+            updateSecondaryIndexFile(fileName) ;
+        }
     }
 
     void removeSecondaryNode(const string &secondaryKey, const string &fileName) {
@@ -118,13 +126,31 @@ public:
         cerr << "Error: Secondary key not found.\n";
     }
 
-    void removePrimaryKey(const string & secondaryKey ,const string & primaryKey , const string & fileName){
-        int indexNode = binarySearchSecondaryIndex(secondaryKey) ; // find node
-        int indexKey = binarySearchPrimaryKeys(indexNode,primaryKey) ; // find key
-        secondaryIndex[indexNode].primaryKeys.erase(secondaryIndex[indexNode].primaryKeys.begin() + indexKey) ;
-        sortSecondaryIndex() ;
-        updateSecondaryIndexFile(fileName) ;
+    void removePrimaryKeyFromSecondaryNode(const string &secondaryKey, const string &primaryKey, const string &fileName) {
+        int indexNode = binarySearchSecondaryIndex(secondaryKey); // Find node
+        if (indexNode == -1) {
+            cerr << "Error: Secondary key not found in index.\n";
+            return;
+        }
+
+        int indexKey = binarySearchPrimaryKeys(indexNode, primaryKey); // Find key
+        if (indexKey == -1) {
+            cerr << "Error: Primary key " << primaryKey << " not found in secondary node with key " << secondaryKey << ".\n";
+            return;
+        }
+
+        // Erase the primary key
+        secondaryIndex[indexNode].primaryKeys.erase(secondaryIndex[indexNode].primaryKeys.begin() + indexKey);
+
+        // If no primary keys are left, remove the entire secondary node
+        if (secondaryIndex[indexNode].primaryKeys.empty()) {
+            removeSecondaryNode(secondaryKey, fileName);
+        }
+
+        sortSecondaryIndex(); // Ensure the index is sorted
+        updateSecondaryIndexFile(fileName); // Persist changes
     }
+
 
     int binarySearchSecondaryIndex(const string &secondaryKey) {
         int left = 0;
@@ -142,22 +168,24 @@ public:
         return -1;
     }
 
-    int binarySearchPrimaryKeys(int indexNode , const string & primaryKey) {
-
+    int binarySearchPrimaryKeys(int indexNode, const string &primaryKey) {
+        const vector<string> &keys = secondaryIndex[indexNode].primaryKeys;
         int left = 0;
-        int right = secondaryIndex[indexNode].primaryKeys.size() - 1;
+        int right = keys.size() - 1;
+
         while (left <= right) {
             int mid = left + (right - left) / 2;
-            if (secondaryIndex[indexNode].primaryKeys[mid] == primaryKey) {
-                return mid ;
-            } else if (secondaryIndex[indexNode].primaryKeys[mid] < primaryKey) {
-                right = mid - 1;
+            if (keys[mid] == primaryKey) {
+                return mid; // Found the primary key
+            } else if (keys[mid] < primaryKey) {
+                left = mid + 1; // Search in the right half
             } else {
-                left = mid + 1;
+                right = mid - 1; // Search in the left half
             }
         }
-        return -1;
+        return -1; // Not found
     }
+
 
 };
 

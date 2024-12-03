@@ -37,6 +37,8 @@ void trim(std::string &str) {
 
 int main() {
 
+
+
     cout << "Welcome to Your Health Care Management System\n";
     int choice = -1;
 

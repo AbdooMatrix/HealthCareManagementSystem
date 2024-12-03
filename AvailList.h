@@ -28,19 +28,27 @@ public:
     void insert(AvailListNode *newNode, const string &fileName) {
         if (header == nullptr) { // Empty list
             header = newNode;
-        }
-        else { // Insert in sorted order
+        } else { // Insert in sorted order
             AvailListNode *prev = nullptr;
             AvailListNode *curr = header;
+
+            // Traverse to find the correct position
             while (curr != nullptr && curr->size < newNode->size) {
                 prev = curr;
                 curr = curr->next;
             }
-            prev->next = newNode;
-            newNode->next = curr;
+
+            if (prev == nullptr) { // Insert at the beginning
+                newNode->next = header;
+                header = newNode;
+            } else { // Insert in the middle or end
+                prev->next = newNode;
+                newNode->next = curr;
+            }
         }
         updateAvailListFile(fileName);
     }
+
 
     void remove(AvailListNode *nodeToRemove, const string &fileName) {
         if (header == nullptr || nodeToRemove == nullptr) {
@@ -122,9 +130,6 @@ public:
             availFile << curr->offset << "|" << curr->size << '\n';
             curr = curr->next;
         }
-
-        printAvailList();
-
         availFile.close();  // Ensure to close the file after writing
     }
 

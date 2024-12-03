@@ -113,6 +113,8 @@ public:
         file.close();
     }
 
+
+
     void updatePrimaryIndexFile(const string &fileName) {
         fstream outFile(fileName, ios::out | ios::trunc);
         if (!outFile.is_open()) {
