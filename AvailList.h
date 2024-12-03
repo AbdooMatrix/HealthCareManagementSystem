@@ -28,7 +28,6 @@ public:
         }
     }
 
-
     AvailListNode* bestFit(int newSize){ // offset - size
         AvailListNode* curr = header ;
         while(curr != nullptr && curr->size < newSize){
@@ -71,7 +70,6 @@ public:
             delete curr;
         }
     }
-
 
 };
 
