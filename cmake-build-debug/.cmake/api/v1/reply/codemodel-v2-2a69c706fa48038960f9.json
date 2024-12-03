@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "D:/College/Projects/HealthCareManagementSystem/cmake-build-debug",
-		"source" : "D:/College/Projects/HealthCareManagementSystem"
+		"build" : "C:/Users/dell/Documents/GitHub/HealthCareManagementSystem/cmake-build-debug",
+		"source" : "C:/Users/dell/Documents/GitHub/HealthCareManagementSystem"
 	},
 	"version" : 
 	{

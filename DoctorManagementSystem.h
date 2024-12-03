@@ -166,7 +166,7 @@ public:
             }
             newRecord += to_string(lengthIndicator) + "|" + doctor.id + "|" + doctor.name + "|" + doctor.address + "|\n";
 
-            file.seekp(0, ios::end);
+            file.seekp(0, ios::end) ;
             offset = static_cast<int>(file.tellp());
             file.write(newRecord.c_str(), newRecord.size());
         }
@@ -220,10 +220,16 @@ public:
             newName.append(padding , '-') ;
 
             doctorFile.write(newName.c_str(), oldSize);
-            cout << "Doctor's name updated successfully.\n";
+
         } else {
-            cout << "Error: New name is too long to fit in the existing record.\n";
+            deleteDoctor(record_id) ;
+            Doctor doctor ;
+            doctor.id = getNewId() ;
+            doctor.name = newName ;
+            doctor.address = address ;
+            addDoctor(doctor) ;
         }
+        cout << "Doctor's name updated successfully.\n";
 
         doctorFile.close();
     }
@@ -247,7 +253,7 @@ public:
 
         doctorFile.put('*'); // Overwrite the status byte with '*'
 
-        doctorFile.seekp(1,ios::cur) ;
+        doctorFile.seekg(offset + 2,ios::beg) ;
 
         string lengthString;
         getline(doctorFile, lengthString, '|'); // get length indicator from record
@@ -265,6 +271,7 @@ public:
             return entry.doctorID == id;
         });
         primaryIndex.erase(it, primaryIndex.end());
+        sortIndexes() ;
         updatePrimaryIndexFile();
     }
 
@@ -290,6 +297,8 @@ public:
         file.seekg(offSet, ios::beg);
         string line;
         getline(file, line); // Read the record from the file.
+
+        cout << line << endl ;
 
         if (line.empty()) {
             cout << "Error: Empty record at offset " << offSet << ".\n";
