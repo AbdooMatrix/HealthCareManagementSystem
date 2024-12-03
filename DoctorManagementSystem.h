@@ -6,45 +6,18 @@
 #include "SecondaryIndex.h"
 #include "Doctor.h"
 #include "AvailList.h"
-#include "AvailListNode.h"
 
 using namespace std;
 
 class DoctorManagementSystem {
 private:
     PrimaryIndex doctorPrimaryIndex;  // Primary index for Doctor ID
-    AvailList availList;
+    AvailList doctorAvailList;
 
 public:
     DoctorManagementSystem() {
         doctorPrimaryIndex.loadPrimaryIndexInMemory("DoctorPrimaryIndex.txt");
-        loadAvailListInMemory();
-    }
-
-    void loadAvailListInMemory() {
-        fstream doctorFile("doctors.txt", ios::in);
-
-        if (!doctorFile.is_open()) {
-            cerr << "Error opening file: doctors.txt\n";
-            return;
-        }
-        if (isFileEmpty("doctors.txt")) {
-            return;
-        }
-
-        string line;
-
-        while (getline(doctorFile, line)) {
-            istringstream stream(line);
-            string status, size;
-            getline(stream, status, '|');
-            getline(stream, size, '|');
-            if (status == "*") {
-                int offset = static_cast<int>(doctorFile.tellg());
-                AvailListNode *newNode = new AvailListNode(offset, stoi(size));
-                availList.insert(newNode);
-            }
-        }
+        doctorAvailList.loadAvailListInMemory("doctors.txt");
     }
 
     void addDoctor(Doctor &doctor) {
@@ -60,7 +33,7 @@ public:
                               static_cast<int>(doctor.name.size()) +
                               static_cast<int>(doctor.address.size()) + 4;
 
-        AvailListNode *node = availList.bestFit(lengthIndicator);
+        AvailListNode *node = doctorAvailList.bestFit(lengthIndicator);
 
         string newRecord = "";
         int offset;
@@ -78,7 +51,7 @@ public:
             if (padding >= 0) {
                 newRecord.append(padding, '-');
             } else {
-                cerr << "Error: Record size exceeds node size in availList!" << endl;
+                cerr << "Error: Record size exceeds node size in doctorAvailList!" << endl;
                 file.close();
                 return;
             }
@@ -87,7 +60,7 @@ public:
 
             file.write(newRecord.c_str(), node->size);
             offset = node->offset;
-            availList.remove(node);
+            doctorAvailList.remove(node, "DoctorAvailList.txt");
 
         } else {
             newRecord += " |";
@@ -190,8 +163,9 @@ public:
 
         doctorFile.close();
 
+        // Add node to DoctorAvailList
         AvailListNode *newNode = new AvailListNode(offset, lengthIndicator);
-        availList.insert(newNode);
+        doctorAvailList.insert(newNode, "DoctorAvailList.txt");
 
         // Remove the doctor from the primary index and update the file
         doctorPrimaryIndex.removePrimaryNode(id, "DoctorPrimaryIndex.txt");
