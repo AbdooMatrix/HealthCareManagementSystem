@@ -1,5 +1,0 @@
-*|21|1|abdo mostafa|giza|
- |22|2|abdo mostafa|cairo|
- |21|3|omar mohamed|giza|
- |22|4|omar mohamed|cairo|
- |22|5|hosny mohamed|giza|
