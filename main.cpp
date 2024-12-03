@@ -59,7 +59,6 @@ int main() {
 
         if (choice == 1) {
             Doctor doctor;
-            string id = sys.getNewId();
             string name, address;
             cout << "Enter doctor name: ";
             cin.ignore() ;
@@ -69,7 +68,6 @@ int main() {
             getline(cin, address);
             trim(name) ;
             trim(address) ;
-            doctor.id = id;
             doctor.name = name;
             doctor.address = address;
 

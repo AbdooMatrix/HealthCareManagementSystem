@@ -6,7 +6,7 @@ using namespace std ;
 class Doctor {
 public:
     Doctor(){
-        id , name , address = "" ;
+        id = name = address = "" ;
     }
     string id;    // Primary Key
     string name;  // Secondary Key

@@ -2,8 +2,8 @@
 #define HEALTHCAREMANAGEMENTSYSTEM_DOCTORMANAGEMENTSYSTEM_H
 
 #include <bits/stdc++.h>
-#include "DoctorPrimaryIndex.h"
-#include "DoctorSecondaryIndex.h"
+#include "PrimaryIndex.h"
+#include "SecondaryIndex.h"
 #include "Doctor.h"
 #include "AvailList.h"
 #include "AvailListNode.h"
@@ -12,114 +12,13 @@ using namespace std;
 
 class DoctorManagementSystem {
 private:
-    vector<DoctorPrimaryIndex> primaryIndex;  // Primary index for Doctor ID
-    map<string,vector<string>> secondaryIndex;  // Secondary index for Doctor Name
+    PrimaryIndex doctorPrimaryIndex;  // Primary index for Doctor ID
     AvailList availList;
 
 public:
     DoctorManagementSystem() {
-        loadPrimaryIndexInMemory();
-    }
-
-    string getNewId() {
-        if (primaryIndex.empty()) {
-            return "1";
-        } else {
-            int newId = static_cast<int>(stol(primaryIndex.back().doctorID));
-            newId++;
-            return to_string(newId);
-        }
-    }
-
-    void sortPrimaryIndex() {
-        sort(primaryIndex.begin(), primaryIndex.end());
-    }
-    void sortSecondaryIndex(){
-        for(auto& ele : secondaryIndex){
-            sort(ele.second.begin() , ele.second.end()) ;
-        }
-    }
-
-    static bool isFileEmpty(const string &filename) {
-        ifstream file(filename, ios::in);
-        return file.peek() == ifstream::traits_type::eof();  // Check if the file is empty
-    }
-
-    void loadPrimaryIndexInMemory() {
-        ifstream file("DoctorPrimaryIndex.txt", ios::in);
-        if (!file.is_open()) {
-            cerr << "Error opening file: DoctorPrimaryIndex.txt\n";
-            return;
-        }
-        if (isFileEmpty("DoctorPrimaryIndex.txt")) {
-            return;
-        }
-
-        string line;
-        while (getline(file, line)) {
-
-            istringstream recordStream(line);
-            string id, offset;
-
-            getline(recordStream, id, '|');
-            getline(recordStream, offset, '|');
-
-            primaryIndex.emplace_back(id, stoi(offset)); // Save the correct offset.
-        }
-
-        file.close();
-    }
-
-    void loadSecondaryIndexInMemory(){
-        ifstream file("DoctorSecondaryIndex.txt", ios::in);
-        if (!file.is_open()) {
-            cerr << "Error opening file: DoctorPrimaryIndex.txt\n";
-            return;
-        }
-        if (isFileEmpty("DoctorPrimaryIndex.txt")) {
-            return;
-        }
-        string line;
-        while (getline(file, line)) {
-            istringstream recordStream(line);
-            string name, id;
-            vector<string> vec ;
-            secondaryIndex.insert({name , vec}) ;
-            while(getline(recordStream , id   , ',')){
-                secondaryIndex[name].push_back(id) ;
-            }
-        }
-        file.close();
-        sortSecondaryIndex() ;
-    }
-
-
-    void updatePrimaryIndexFile() {
-        fstream outFile("DoctorPrimaryIndex.txt", ios::out | ios::trunc);
-        if (!outFile.is_open()) {
-            cerr << "Error opening file: DoctorPrimaryIndex.txt\n";
-            return;
-        }
-        for (const auto &ele: primaryIndex) {
-            outFile << ele.doctorID << '|' << ele.fileOffset << '\n';
-        }
-        outFile.close();
-    }
-
-    int binarySearchPrimaryIndex(const string &id) {
-        int left = 0;
-        int right = primaryIndex.size() - 1;
-        while (left <= right) {
-            int mid = left + (right - left) / 2;
-            if (primaryIndex[mid].doctorID == id) {
-                return primaryIndex[mid].fileOffset;
-            } else if (id < primaryIndex[mid].doctorID) {
-                right = mid - 1;
-            } else {
-                left = mid + 1;
-            }
-        }
-        return -1;
+        doctorPrimaryIndex.loadPrimaryIndexInMemory("DoctorPrimaryIndex.txt");
+        loadAvailListInMemory();
     }
 
     void loadAvailListInMemory() {
@@ -148,7 +47,9 @@ public:
         }
     }
 
-    void addDoctor(const Doctor &doctor) {
+    void addDoctor(Doctor &doctor) {
+        doctor.id = doctorPrimaryIndex.getNewId();
+
         fstream file("doctors.txt", ios::in | ios::out);
         if (!file.is_open()) {
             cerr << "Error opening file: doctors.txt" << endl;
@@ -159,43 +60,44 @@ public:
                               static_cast<int>(doctor.name.size()) +
                               static_cast<int>(doctor.address.size()) + 4;
 
-        AvailListNode* node = availList.bestFit(lengthIndicator);
+        AvailListNode *node = availList.bestFit(lengthIndicator);
 
-        string newRecord = "" ;
-        int offset  ;
+        string newRecord = "";
+        int offset;
 
         if (node != nullptr) { // node is found with appropriate size
             file.seekp(node->offset, ios::beg);
-            file.put(' ') ;
+            file.put(' ');
 
             file.seekp(3, ios::cur);
 
-            newRecord +=  "|" + doctor.id + "|" + doctor.name + "|" + doctor.address + "|";
+            newRecord += "|" + doctor.id + "|" + doctor.name + "|" + doctor.address + "|";
 
-            int padding = node->size - static_cast<int>(newRecord.size()) ;
+            int padding = node->size - static_cast<int>(newRecord.size());
 
             if (padding >= 0) {
-                newRecord.append(padding , '-');
+                newRecord.append(padding, '-');
             } else {
                 cerr << "Error: Record size exceeds node size in availList!" << endl;
                 file.close();
                 return;
             }
 
-            newRecord += '\n' ;
+            newRecord += '\n';
 
             file.write(newRecord.c_str(), node->size);
             offset = node->offset;
             availList.remove(node);
 
         } else {
-            newRecord += " |" ;
+            newRecord += " |";
             if (lengthIndicator < 10) {
                 newRecord += '0';
             }
-            newRecord += to_string(lengthIndicator) + "|" + doctor.id + "|" + doctor.name + "|" + doctor.address + "|\n";
+            newRecord +=
+                    to_string(lengthIndicator) + "|" + doctor.id + "|" + doctor.name + "|" + doctor.address + "|\n";
 
-            file.seekp(0, ios::end) ;
+            file.seekp(0, ios::end);
             offset = static_cast<int>(file.tellp());
             file.write(newRecord.c_str(), newRecord.size());
         }
@@ -204,18 +106,11 @@ public:
 
         file.close();
 
-        primaryIndex.emplace_back(doctor.id, offset);
-        updatePrimaryIndexFile();
-
-
-
-        sortPrimaryIndex() ;
-        sortSecondaryIndex();
+        doctorPrimaryIndex.addPrimaryNode(doctor.id, offset, "DoctorPrimaryIndex.txt");
     }
 
-
     void updateDoctorName(const string &id, string &newName) {
-        int offset = binarySearchPrimaryIndex(id);
+        int offset = doctorPrimaryIndex.binarySearchPrimaryIndex(id);
 
         if (offset == -1) {
             cout << "Doctor with ID: " << id << " does not exist.\n";
@@ -249,27 +144,26 @@ public:
         if (newSize <= oldSize) {
             doctorFile.seekp(offset + 7, ios::beg);
 
-            int padding = oldSize - newSize ;
-            newName.append(padding , '-') ;
+            int padding = oldSize - newSize;
+            newName.append(padding, '-');
 
             doctorFile.write(newName.c_str(), oldSize);
 
         } else {
-            deleteDoctor(record_id) ;
-            Doctor doctor ;
-            doctor.id = getNewId() ;
-            doctor.name = newName ;
-            doctor.address = address ;
-            addDoctor(doctor) ;
+            deleteDoctor(record_id);
+            Doctor doctor;
+            doctor.id = doctorPrimaryIndex.getNewId();
+            doctor.name = newName;
+            doctor.address = address;
+            addDoctor(doctor);
         }
         cout << "Doctor's name updated successfully.\n";
 
         doctorFile.close();
     }
 
-
     void deleteDoctor(const string &id) {
-        int offset = binarySearchPrimaryIndex(id);
+        int offset = doctorPrimaryIndex.binarySearchPrimaryIndex(id);
         if (offset == -1) {
             cout << "Doctor with ID " << id << " not found.\n";
             return;
@@ -286,7 +180,7 @@ public:
 
         doctorFile.put('*'); // Overwrite the status byte with '*'
 
-        doctorFile.seekg(offset + 2,ios::beg) ;
+        doctorFile.seekg(offset + 2, ios::beg);
 
         string lengthString;
         getline(doctorFile, lengthString, '|'); // get length indicator from record
@@ -296,27 +190,15 @@ public:
 
         doctorFile.close();
 
-        AvailListNode* newNode= new AvailListNode(offset , lengthIndicator) ;
-        availList.insert(newNode) ;
+        AvailListNode *newNode = new AvailListNode(offset, lengthIndicator);
+        availList.insert(newNode);
 
         // Remove the doctor from the primary index and update the file
-        auto it = remove_if(primaryIndex.begin(), primaryIndex.end(), [&](const DoctorPrimaryIndex &entry) {
-            return entry.doctorID == id;
-        });
-        primaryIndex.erase(it, primaryIndex.end());
-        sortPrimaryIndex() ;
-        sortSecondaryIndex() ;
-        updatePrimaryIndexFile();
-    }
-
-    void printPrimaryIndex() {
-        for (const auto &index: primaryIndex) {
-            cout << index.doctorID << "-->" << index.fileOffset << endl;
-        }
+        doctorPrimaryIndex.removePrimaryNode(id, "DoctorPrimaryIndex.txt");
     }
 
     void printDoctorInfo(const string &id) {
-        int offSet = binarySearchPrimaryIndex(id);
+        int offSet = doctorPrimaryIndex.binarySearchPrimaryIndex(id);
         if (offSet == -1) {
             cout << "Doctor not found. The ID \"" << id << "\" is invalid.\n";
             return;
@@ -332,7 +214,7 @@ public:
         string line;
         getline(file, line); // Read the record from the file.
 
-        cout << line << endl ;
+        cout << line << endl;
 
         if (line.empty()) {
             cout << "Error: Empty record at offset " << offSet << ".\n";
@@ -340,23 +222,23 @@ public:
         }
 
         istringstream recordStream(line);
-        string status , length, record_id, name, address;
+        string status, length, record_id, name, address;
 
         // Parse the record
-        getline(recordStream, status, '|') ;
-        getline(recordStream, length, '|') ;
-        getline(recordStream, record_id, '|') ;
-        getline(recordStream, name, '|') ;
-        getline(recordStream, address, '|') ;
+        getline(recordStream, status, '|');
+        getline(recordStream, length, '|');
+        getline(recordStream, record_id, '|');
+        getline(recordStream, name, '|');
+        getline(recordStream, address, '|');
 
         file.close();
 
-        string temp ;
-        for(int i = 0 ; i < name.size() ; ++i){
-            if(name[i] != '-')
-                temp += name[i] ;
+        string temp;
+        for (int i = 0; i < name.size(); ++i) {
+            if (name[i] != '-')
+                temp += name[i];
         }
-        name = temp ;
+        name = temp;
 
         cout << "Doctor's info:\n"
              << "  ID: " << record_id << '\n'
