@@ -1,6 +1,8 @@
 #include <bits/stdc++.h>
 #include "Doctor.h"
 #include "DoctorManagementSystem.h"
+#include "Appointment.h"
+#include "AppointmentManagementSystem.h"
 using namespace std;
 
 void checkContinue() {
@@ -41,6 +43,7 @@ int main() {
     int choice = -1;
 
     DoctorManagementSystem sys;
+    AppointmentManagementSystem appoSys;
 
     while (choice != 0) {
         cout <<
@@ -75,7 +78,21 @@ int main() {
             checkContinue();
         }
         else if (choice == 2) {
-            // Code for appointment handling goes here
+            Appointment appointment;
+            string date, doctorID;
+            cout << "Enter the date: ";
+            cin.ignore() ;
+            getline(cin, date);
+
+            cout << "Enter doctor ID: ";
+            getline(cin, doctorID);
+            trim(date) ;
+            trim(doctorID) ;
+            appointment.date = date;
+            appointment.doctorID = doctorID;
+
+            appoSys.addAppointment(appointment);
+            checkContinue();
         }
         else if (choice == 3) {
             // Code for updating doctor name
@@ -93,10 +110,25 @@ int main() {
             checkContinue();
         }
         else if (choice == 4) {
-            // Code for updating appointment date
+            string id;
+            cout << "Please enter the Appointment's ID you want to change his date: ";
+            cin >> id;
+
+            string newDate;
+            cout << "Please enter new date: ";
+            cin.ignore(); // Clear input buffer
+            getline(cin, newDate);
+            trim(newDate) ;
+
+            appoSys.updateAppointmentDate(id , newDate);
+            checkContinue();
         }
         else if (choice == 5) {
-            // Code for deleting appointment
+            string id;
+            cout << "Please enter the Appointment's ID you want to delete: ";
+            cin >> id;
+            appoSys.deleteAppointment(id);
+            checkContinue();
         }
         else if (choice == 6) {
             string id;
@@ -113,7 +145,11 @@ int main() {
             checkContinue();
         }
         else if (choice == 8) {
-            // Code for printing appointment info
+            string id;
+            cout << "Please enter the Appointment's ID you want to search on: ";
+            cin >> id;
+            appoSys.printAppointmentInfo(id);
+            checkContinue();
         }
         else if (choice == 9) {
             // Code for writing query
