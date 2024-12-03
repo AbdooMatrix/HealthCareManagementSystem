@@ -19,7 +19,7 @@ public:
     DoctorManagementSystem() {
         doctorPrimaryIndex.loadPrimaryIndexInMemory("DoctorPrimaryIndex.txt");
         doctorSecondaryIndex.loadSecondaryIndexInMemory("DoctorSecondaryIndex.txt");
-        doctorAvailList.loadAvailListInMemory("doctors.txt");
+        doctorAvailList.loadAvailListInMemory("DoctorAvailList.txt");
     }
 
     void addDoctor(Doctor &doctor) {
