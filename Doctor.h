@@ -14,6 +14,7 @@ public:
     string id;    // Primary Key
     string name;  // Secondary Key
     string address;
+    Doctor(const string& id,const string& name,const string& address) : id(id), name(name), address(address){}
 };
 
 

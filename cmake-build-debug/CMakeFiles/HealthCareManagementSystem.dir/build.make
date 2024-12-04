@@ -52,10 +52,10 @@ RM = "C:\Program Files\JetBrains\CLion 2024.3\bin\cmake\win\x64\bin\cmake.exe" -
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = C:\Users\dell\Documents\GitHub\HealthCareManagementSystem
+CMAKE_SOURCE_DIR = "C:\Users\Moody Shebl\Documents\GitHub\HealthCareManagementSystem"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = C:\Users\dell\Documents\GitHub\HealthCareManagementSystem\cmake-build-debug
+CMAKE_BINARY_DIR = "C:\Users\Moody Shebl\Documents\GitHub\HealthCareManagementSystem\cmake-build-debug"
 
 # Include any dependencies generated for this target.
 include CMakeFiles/HealthCareManagementSystem.dir/depend.make
@@ -69,18 +69,18 @@ include CMakeFiles/HealthCareManagementSystem.dir/progress.make
 include CMakeFiles/HealthCareManagementSystem.dir/flags.make
 
 CMakeFiles/HealthCareManagementSystem.dir/main.cpp.obj: CMakeFiles/HealthCareManagementSystem.dir/flags.make
-CMakeFiles/HealthCareManagementSystem.dir/main.cpp.obj: C:/Users/dell/Documents/GitHub/HealthCareManagementSystem/main.cpp
+CMakeFiles/HealthCareManagementSystem.dir/main.cpp.obj: C:/Users/Moody\ Shebl/Documents/GitHub/HealthCareManagementSystem/main.cpp
 CMakeFiles/HealthCareManagementSystem.dir/main.cpp.obj: CMakeFiles/HealthCareManagementSystem.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\dell\Documents\GitHub\HealthCareManagementSystem\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/HealthCareManagementSystem.dir/main.cpp.obj"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/HealthCareManagementSystem.dir/main.cpp.obj -MF CMakeFiles\HealthCareManagementSystem.dir\main.cpp.obj.d -o CMakeFiles\HealthCareManagementSystem.dir\main.cpp.obj -c C:\Users\dell\Documents\GitHub\HealthCareManagementSystem\main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\Moody Shebl\Documents\GitHub\HealthCareManagementSystem\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/HealthCareManagementSystem.dir/main.cpp.obj"
+	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/HealthCareManagementSystem.dir/main.cpp.obj -MF CMakeFiles\HealthCareManagementSystem.dir\main.cpp.obj.d -o CMakeFiles\HealthCareManagementSystem.dir\main.cpp.obj -c "C:\Users\Moody Shebl\Documents\GitHub\HealthCareManagementSystem\main.cpp"
 
 CMakeFiles/HealthCareManagementSystem.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/HealthCareManagementSystem.dir/main.cpp.i"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\dell\Documents\GitHub\HealthCareManagementSystem\main.cpp > CMakeFiles\HealthCareManagementSystem.dir\main.cpp.i
+	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "C:\Users\Moody Shebl\Documents\GitHub\HealthCareManagementSystem\main.cpp" > CMakeFiles\HealthCareManagementSystem.dir\main.cpp.i
 
 CMakeFiles/HealthCareManagementSystem.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/HealthCareManagementSystem.dir/main.cpp.s"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\dell\Documents\GitHub\HealthCareManagementSystem\main.cpp -o CMakeFiles\HealthCareManagementSystem.dir\main.cpp.s
+	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "C:\Users\Moody Shebl\Documents\GitHub\HealthCareManagementSystem\main.cpp" -o CMakeFiles\HealthCareManagementSystem.dir\main.cpp.s
 
 # Object files for target HealthCareManagementSystem
 HealthCareManagementSystem_OBJECTS = \
@@ -94,7 +94,7 @@ HealthCareManagementSystem.exe: CMakeFiles/HealthCareManagementSystem.dir/build.
 HealthCareManagementSystem.exe: CMakeFiles/HealthCareManagementSystem.dir/linkLibs.rsp
 HealthCareManagementSystem.exe: CMakeFiles/HealthCareManagementSystem.dir/objects1.rsp
 HealthCareManagementSystem.exe: CMakeFiles/HealthCareManagementSystem.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\dell\Documents\GitHub\HealthCareManagementSystem\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable HealthCareManagementSystem.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir="C:\Users\Moody Shebl\Documents\GitHub\HealthCareManagementSystem\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable HealthCareManagementSystem.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\HealthCareManagementSystem.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -106,6 +106,6 @@ CMakeFiles/HealthCareManagementSystem.dir/clean:
 .PHONY : CMakeFiles/HealthCareManagementSystem.dir/clean
 
 CMakeFiles/HealthCareManagementSystem.dir/depend:
-	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" C:\Users\dell\Documents\GitHub\HealthCareManagementSystem C:\Users\dell\Documents\GitHub\HealthCareManagementSystem C:\Users\dell\Documents\GitHub\HealthCareManagementSystem\cmake-build-debug C:\Users\dell\Documents\GitHub\HealthCareManagementSystem\cmake-build-debug C:\Users\dell\Documents\GitHub\HealthCareManagementSystem\cmake-build-debug\CMakeFiles\HealthCareManagementSystem.dir\DependInfo.cmake "--color=$(COLOR)"
+	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" "C:\Users\Moody Shebl\Documents\GitHub\HealthCareManagementSystem" "C:\Users\Moody Shebl\Documents\GitHub\HealthCareManagementSystem" "C:\Users\Moody Shebl\Documents\GitHub\HealthCareManagementSystem\cmake-build-debug" "C:\Users\Moody Shebl\Documents\GitHub\HealthCareManagementSystem\cmake-build-debug" "C:\Users\Moody Shebl\Documents\GitHub\HealthCareManagementSystem\cmake-build-debug\CMakeFiles\HealthCareManagementSystem.dir\DependInfo.cmake" "--color=$(COLOR)"
 .PHONY : CMakeFiles/HealthCareManagementSystem.dir/depend
 

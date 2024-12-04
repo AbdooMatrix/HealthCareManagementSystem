@@ -23,6 +23,9 @@ public:
         appointmentSecondaryIndex.loadSecondaryIndexInMemory("AppointmentSecondaryIndex.txt");
     }
 
+    PrimaryIndex& getAppointmentPrimaryIndex() { return appointmentPrimaryIndex; }
+    SecondaryIndex& getAppointmentSecondaryIndex() { return appointmentSecondaryIndex; }
+
     void addAppointment(Appointment &appointment) {
 
         doctorPrimaryIndex.loadPrimaryIndexInMemory("DoctorPrimaryIndex.txt");
@@ -258,7 +261,200 @@ public:
             printAppointmentInfo(appointmentID);
         }
     }
+vector<string> searchByDate(const string& date) {
+        // Using the appointment’s secondary index to search by date
+        vector<string> appointmentIds = appointmentSecondaryIndex.getPrimaryKeysBySecondaryKey(date);
+        return appointmentIds;
+    }
 
+    void printAppointment(const string &id) {
+        int offSet = appointmentPrimaryIndex.binarySearchPrimaryIndex(id);
+        if (offSet == -1) {
+            cout << "appointment not found. The ID \"" << id << "\" is invalid.\n";
+            return;
+        }
+
+        fstream file("appointments.txt", ios::in);
+        if (!file.is_open()) {
+            cout << "Error opening file.\n";
+            return;
+        }
+
+        file.seekg(offSet, ios::beg);
+        string line;
+        getline(file, line); // Read the record from the file.
+
+        cout << line << endl;
+
+        if (line.empty()) {
+            cout << "Error: Empty record at offset " << offSet << ".\n";
+            return;
+        }
+
+        file.close();
+
+    }
+
+    void printAllAppointments() {
+        ifstream file("appointments.txt",ios::in );
+        if (!file) {
+            cerr << "Error opening appointments file.\n";
+            return;
+        }
+
+        string line;
+        while (getline(file, line)) {
+            cout << line << endl;
+        }
+        file.close();
+    }
+
+    void printAppointmentAllDates() {
+        ifstream file("appointments.txt");
+        if (!file.is_open()) {
+            cout << "Error: Unable to open the appointments file.\n";
+            return;
+        }
+
+        string line;
+        while (getline(file, line)) {
+            // Parse the line
+            size_t dateStart = line.find('|', line.find('|', line.find('|') + 1) + 1) + 1;
+            size_t dateEnd = line.find('|', dateStart);
+
+            string date = line.substr(dateStart, dateEnd - dateStart);
+            cout << date << endl;  // Print the date
+        }
+
+        file.close();
+    }
+
+    void printAppointmentAllIds() {
+        ifstream file("appointments.txt");
+        if (!file.is_open()) {
+            cout << "Error: Unable to open the appointments file.\n";
+            return;
+        }
+
+        string line;
+        while (getline(file, line)) {
+            // Parse the line
+            size_t idStart = line.find('|', line.find('|') + 1) + 1;
+            size_t idEnd = line.find('|', idStart);
+
+            string id = line.substr(idStart, idEnd - idStart);
+            cout << id << endl;  // Print the ID
+        }
+
+        file.close();
+    }
+
+    void printAppointmentAllDoctorids() {
+        ifstream file("appointments.txt");
+        if (!file.is_open()) {
+            cout << "Error: Unable to open the appointments file.\n";
+            return;
+        }
+
+        string line;
+        while (getline(file, line)) {
+            // Parse the line
+            size_t doctoridStart = line.find('|', line.find('|', line.find('|', line.find('|') + 1) + 1) + 1) + 1;
+            size_t doctoridEnd = line.find('|', doctoridStart);
+
+            string doctorid = line.substr(doctoridStart, doctoridEnd - doctoridStart);
+            cout << doctorid << endl;  // Print the doctor id
+        }
+
+        file.close();
+    }
+
+    void printAppointmentId(const string& appointmentId) {
+    ifstream file("appointments.txt");
+    if (!file.is_open()) {
+        cout << "Error: Unable to open the appointments file.\n";
+        return;
+    }
+
+    string line;
+    while (getline(file, line)) {
+        // Parse the line to extract the ID
+        size_t idStart = line.find('|', line.find('|') + 1) + 1;
+        size_t idEnd = line.find('|', idStart);
+
+        string id = line.substr(idStart, idEnd - idStart);
+
+        if (id == appointmentId) {
+            cout << id << endl;  // Print the appointment ID
+            file.close();
+            return;
+        }
+    }
+
+    cout << "appointment with ID " << appointmentId << " not found.\n";
+    file.close();
+}
+
+void printAppointmentDate(const string& appointmentId) {
+        ifstream file("appointments.txt");
+        if (!file.is_open()) {
+            cout << "Error: Unable to open the appointments file.\n";
+            return;
+        }
+
+        string line;
+        while (getline(file, line)) {
+            // Parse the line to extract the appointment ID
+            size_t idStart = line.find('|', line.find('|') + 1) + 1;
+            size_t idEnd = line.find('|', idStart);
+
+            string id = line.substr(idStart, idEnd - idStart);
+
+            if (id == appointmentId) {
+                size_t dateStart = line.find('|', line.find('|', line.find('|') + 1) + 1) + 1;
+                size_t dateEnd = line.find('|', dateStart);
+
+                string date = line.substr(dateStart, dateEnd - dateStart);
+                cout << date << endl;
+                file.close();
+                return;
+            }
+        }
+
+        cout << "appointment with ID " << appointmentId << " not found.\n";
+        file.close();
+}
+
+void printAppointmentDoctorid(const string& appointmentId) {
+    ifstream file("appointments.txt");
+    if (!file.is_open()) {
+        cout << "Error: Unable to open the appointments file.\n";
+        return;
+    }
+
+    string line;
+    while (getline(file, line)) {
+        // Parse the line to extract the ID
+        size_t idStart = line.find('|', line.find('|') + 1) + 1;
+        size_t idEnd = line.find('|', idStart);
+
+        string id = line.substr(idStart, idEnd - idStart);
+
+        if (id == appointmentId) {
+            // Extract the doctor id
+            size_t doctoridStart = line.find('|', line.find('|', line.find('|', line.find('|') + 1) + 1) + 1) + 1;
+            size_t doctoridEnd = line.find('|', doctoridStart);
+
+            string doctorid = line.substr(doctoridStart, doctoridEnd - doctoridStart);
+            cout << doctorid << endl;  // Print the Doctor id
+            file.close();
+            return;
+        }
+    }
+
+    cout << "appointment with ID " << appointmentId << " not found.\n";
+    file.close();
+}
 };
 
 #endif // HEALTHCAREMANAGEMENTSYSTEM_APPOINTMENTMANAGEMENTSYSTEM_H

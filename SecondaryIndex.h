@@ -193,6 +193,15 @@ public:
         return {};
     }
 
+    vector<string> getPrimaryKeysBySecondaryKey(const string& secondaryKey) {
+        int index = binarySearchSecondaryIndex(secondaryKey);  // Binary search for the secondary key
+        if (index != -1) {
+            // If found, return the associated primary keys
+            return secondaryIndex[index].primaryKeys;
+        }
+        return {};  // Return an empty vector if not found
+    }
+
 };
 
 

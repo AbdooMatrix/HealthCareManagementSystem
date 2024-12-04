@@ -231,6 +231,211 @@ public:
              << "  Address: " << address << '\n';
     }
 
+        vector<string> searchByName(const string& name) {
+        // Using the doctor’s secondary index to search by name
+        vector<string> doctorIds = doctorSecondaryIndex.getPrimaryKeysBySecondaryKey(name);
+        return doctorIds;
+    }
+
+    void printDoctor(const string &id) {
+        int offSet = doctorPrimaryIndex.binarySearchPrimaryIndex(id);
+        if (offSet == -1) {
+            cout << "Doctor not found. The ID \"" << id << "\" is invalid.\n";
+            return;
+        }
+
+        fstream file("doctors.txt", ios::in);
+        if (!file.is_open()) {
+            cout << "Error opening file.\n";
+            return;
+        }
+
+        file.seekg(offSet, ios::beg);
+        string line;
+        getline(file, line); // Read the record from the file.
+
+        cout << line << endl;
+
+        if (line.empty()) {
+            cout << "Error: Empty record at offset " << offSet << ".\n";
+            return;
+        }
+
+        file.close();
+
+    }
+
+    void printAllDoctors() {
+        ifstream file("doctors.txt",ios::in );
+        if (!file) {
+            cerr << "Error opening doctor file.\n";
+            return;
+        }
+
+        string line;
+        while (getline(file, line)) {
+            cout << line << endl;
+        }
+        file.close();
+    }
+
+    void printDoctorAllNames() {
+        ifstream file("doctors.txt");
+        if (!file.is_open()) {
+            cout << "Error: Unable to open the doctors file.\n";
+            return;
+        }
+
+        string line;
+        while (getline(file, line)) {
+            // Parse the line
+            size_t nameStart = line.find('|', line.find('|', line.find('|') + 1) + 1) + 1;
+            size_t nameEnd = line.find('|', nameStart);
+
+            string name = line.substr(nameStart, nameEnd - nameStart);
+            cout << name << endl;  // Print the name
+        }
+
+        file.close();
+    }
+
+    void printDoctorAllIds() {
+        ifstream file("doctors.txt");
+        if (!file.is_open()) {
+            cout << "Error: Unable to open the doctors file.\n";
+            return;
+        }
+
+        string line;
+        while (getline(file, line)) {
+            // Parse the line
+            size_t idStart = line.find('|', line.find('|') + 1) + 1;
+            size_t idEnd = line.find('|', idStart);
+
+            string id = line.substr(idStart, idEnd - idStart);
+            cout << id << endl;  // Print the ID
+        }
+
+        file.close();
+    }
+
+    void printDoctorAllAddresses() {
+        ifstream file("doctors.txt");
+        if (!file.is_open()) {
+            cout << "Error: Unable to open the doctors file.\n";
+            return;
+        }
+
+        string line;
+        while (getline(file, line)) {
+            // Parse the line
+            size_t addressStart = line.find('|', line.find('|', line.find('|', line.find('|') + 1) + 1) + 1) + 1;
+            size_t addressEnd = line.find('|', addressStart);
+
+            string address = line.substr(addressStart, addressEnd - addressStart);
+            cout << address << endl;  // Print the address
+        }
+
+        file.close();
+    }
+
+    void printDoctorId(const string& doctorId) {
+    ifstream file("doctors.txt");
+    if (!file.is_open()) {
+        cout << "Error: Unable to open the doctors file.\n";
+        return;
+    }
+
+    string line;
+    while (getline(file, line)) {
+        // Parse the line to extract the ID
+        size_t idStart = line.find('|', line.find('|') + 1) + 1;
+        size_t idEnd = line.find('|', idStart);
+
+        string id = line.substr(idStart, idEnd - idStart);
+
+        if (id == doctorId) {
+            cout << id << endl;  // Print the Doctor ID
+            file.close();
+            return;
+        }
+    }
+
+    cout << "Doctor with ID " << doctorId << " not found.\n";
+    file.close();
+}
+
+void printDoctorName(const string& doctorId) {
+        ifstream file("doctors.txt");
+        if (!file.is_open()) {
+            cout << "Error: Unable to open the doctors file.\n";
+            return;
+        }
+
+        string line;
+        while (getline(file, line)) {
+            // Parse the line to extract the Doctor ID
+            size_t idStart = line.find('|', line.find('|') + 1) + 1;
+            size_t idEnd = line.find('|', idStart);
+
+            string id = line.substr(idStart, idEnd - idStart);
+
+            if (id == doctorId) {
+                // Extract the Name (3rd field between 3rd and 4th '|')
+                size_t nameStart = line.find('|', line.find('|', line.find('|') + 1) + 1) + 1;
+                size_t nameEnd = line.find('|', nameStart);
+
+                string name = line.substr(nameStart, nameEnd - nameStart);
+                cout << name << endl;
+                file.close();
+                return;
+            }
+        }
+
+        cout << "Doctor with ID " << doctorId << " not found.\n";
+        file.close();
+}
+
+void printDoctorAddress(const string& doctorId) {
+    ifstream file("doctors.txt");
+    if (!file.is_open()) {
+        cout << "Error: Unable to open the doctors file.\n";
+        return;
+    }
+
+    string line;
+    while (getline(file, line)) {
+        // Parse the line to extract the ID
+        size_t idStart = line.find('|', line.find('|') + 1) + 1;
+        size_t idEnd = line.find('|', idStart);
+
+        string id = line.substr(idStart, idEnd - idStart);
+
+        if (id == doctorId) {
+            // Extract the Address
+            size_t addressStart = line.find('|', line.find('|', line.find('|', line.find('|') + 1) + 1) + 1) + 1;
+            size_t addressEnd = line.find('|', addressStart);
+
+            string address = line.substr(addressStart, addressEnd - addressStart);
+            cout << address << endl;  // Print the Doctor Address
+            file.close();
+            return;
+        }
+    }
+
+    cout << "Doctor with ID " << doctorId << " not found.\n";
+    file.close();
+}
+
+PrimaryIndex& getDoctorPrimaryIndex() {
+        return doctorPrimaryIndex;
+    }
+
+    SecondaryIndex& getDoctorSecondaryIndex() {
+        return doctorSecondaryIndex;
+    }
+
+
 };
 
 
