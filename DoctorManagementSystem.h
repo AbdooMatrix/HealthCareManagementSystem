@@ -64,7 +64,8 @@ public:
             if (lengthIndicator < 10) {
                 newRecord += '0';
             }
-            newRecord += to_string(lengthIndicator) + "|" + doctor.id + "|" + doctor.name + "|" + doctor.address + "|\n";
+            newRecord +=
+                    to_string(lengthIndicator) + "|" + doctor.id + "|" + doctor.name + "|" + doctor.address + "|\n";
 
             file.seekp(0, ios::end);
             offset = static_cast<int>(file.tellp());

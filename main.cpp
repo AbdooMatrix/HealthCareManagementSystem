@@ -3,12 +3,12 @@
 #include "DoctorManagementSystem.h"
 #include "Appointment.h"
 #include "AppointmentManagementSystem.h"
+
 using namespace std;
 
 void checkContinue() {
     char cont = '0';
-    while (tolower(cont) != 'y')
-    {
+    while (tolower(cont) != 'y') {
         cout << "Press 'y' or 'Y' to continue: ";
         cin >> cont;
     }
@@ -32,7 +32,7 @@ void trim(string &str) {
     }
 
     // Update the string only if trimming is required
-    if (i != 0 || (j != str.size() - 1) ) {
+    if (i != 0 || (j != str.size() - 1)) {
         str = str.substr(i, j - i + 1);
     }
 }
@@ -64,37 +64,35 @@ int main() {
             Doctor doctor;
             string name, address;
             cout << "Enter doctor name: ";
-            cin.ignore() ;
+            cin.ignore();
             getline(cin, name);
 
             cout << "Enter doctor address: ";
             getline(cin, address);
-            trim(name) ;
-            trim(address) ;
+            trim(name);
+            trim(address);
             doctor.name = name;
             doctor.address = address;
 
             doctorSystem.addDoctor(doctor);
             checkContinue();
-        }
-        else if (choice == 2) {
+        } else if (choice == 2) {
             Appointment appointment;
             string date, doctorID;
             cout << "Enter the date: ";
-            cin.ignore() ;
+            cin.ignore();
             getline(cin, date);
 
             cout << "Enter doctor ID: ";
             getline(cin, doctorID);
-            trim(date) ;
-            trim(doctorID) ;
+            trim(date);
+            trim(doctorID);
             appointment.date = date;
             appointment.doctorID = doctorID;
 
             appointmentSystem.addAppointment(appointment);
             checkContinue();
-        }
-        else if (choice == 3) {
+        } else if (choice == 3) {
             // Code for updating doctor name
             string id;
             cout << "Please enter the Doctor's ID you want to change his name: ";
@@ -104,12 +102,11 @@ int main() {
             cout << "Please enter Doctor's new name: ";
             cin.ignore(); // Clear input buffer
             getline(cin, newName);
-            trim(newName) ;
+            trim(newName);
 
-            doctorSystem.updateDoctorName(id , newName);
+            doctorSystem.updateDoctorName(id, newName);
             checkContinue();
-        }
-        else if (choice == 4) {
+        } else if (choice == 4) {
             string id;
             cout << "Please enter the Appointment's ID you want to change his date: ";
             cin >> id;
@@ -118,46 +115,39 @@ int main() {
             cout << "Please enter new date: ";
             cin.ignore(); // Clear input buffer
             getline(cin, newDate);
-            trim(newDate) ;
+            trim(newDate);
 
-            appointmentSystem.updateAppointmentDate(id , newDate);
+            appointmentSystem.updateAppointmentDate(id, newDate);
             checkContinue();
-        }
-        else if (choice == 5) {
+        } else if (choice == 5) {
             string id;
             cout << "Please enter the Appointment's ID you want to delete: ";
             cin >> id;
             appointmentSystem.deleteAppointment(id);
             checkContinue();
-        }
-        else if (choice == 6) {
+        } else if (choice == 6) {
             string id;
             cout << "Please enter the Doctor's ID you want to delete: ";
             cin >> id;
             doctorSystem.deleteDoctor(id);
             checkContinue();
-        }
-        else if (choice == 7) {
+        } else if (choice == 7) {
             string id;
             cout << "Please enter the Doctor's ID you want to search on: ";
             cin >> id;
             doctorSystem.printDoctorInfo(id);
             checkContinue();
-        }
-        else if (choice == 8) {
+        } else if (choice == 8) {
             string id;
             cout << "Please enter the Appointment's ID you want to search on: ";
             cin >> id;
             appointmentSystem.printAppointmentInfo(id);
             checkContinue();
-        }
-        else if (choice == 9) {
+        } else if (choice == 9) {
             // Code for writing query
-        }
-        else if (choice == 0) {
+        } else if (choice == 0) {
             // Exit condition
-        }
-        else {
+        } else {
             cout << "Enter a valid choice\n";
         }
     }

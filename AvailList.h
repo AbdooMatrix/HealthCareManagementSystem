@@ -81,12 +81,12 @@ public:
         }
     }
 
-    AvailListNode* bestFit(int newSize){ // offset - size
-        AvailListNode* curr = header ;
-        while(curr != nullptr && curr->size < newSize){
-            curr = curr->next ;
+    AvailListNode *bestFit(int newSize) { // offset - size
+        AvailListNode *curr = header;
+        while (curr != nullptr && curr->size < newSize) {
+            curr = curr->next;
         }
-        return curr ;
+        return curr;
     }
 
     void loadAvailListInMemory(const string &fileName) {

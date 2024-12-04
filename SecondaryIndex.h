@@ -11,10 +11,11 @@ public:
     string secondaryKey;
     vector<string> primaryKeys;
 
-    SecondaryIndexNode(const string &secondaryKey, vector<string> & vec) {
-        this->secondaryKey = secondaryKey ;
-        this->primaryKeys = vec ;
+    SecondaryIndexNode(const string &secondaryKey, vector<string> &vec) {
+        this->secondaryKey = secondaryKey;
+        this->primaryKeys = vec;
     }
+
     bool operator<(const SecondaryIndexNode &other) const {
         return (this->secondaryKey < other.secondaryKey);
     }
@@ -25,8 +26,7 @@ private:
     vector<SecondaryIndexNode> secondaryIndex;
 
 public:
-    void loadSecondaryIndexInMemory(const string &fileName)
-    {
+    void loadSecondaryIndexInMemory(const string &fileName) {
         ifstream file(fileName, ios::in);
         if (!file.is_open()) {
             cerr << "Error opening file: PrimaryIndex.txt\n";
@@ -40,17 +40,17 @@ public:
         while (getline(file, line)) {
 
             istringstream recordStream(line);
-            string secondaryKey ;
-            string primarykey ;
+            string secondaryKey;
+            string primarykey;
 
-            getline(recordStream, secondaryKey , '|');
+            getline(recordStream, secondaryKey, '|');
 
 
-            vector<string>pks ; // vector to store the primary keys.
-            while(getline(recordStream ,primarykey  , ',')){
-                pks.emplace_back(primarykey) ;
+            vector<string> pks; // vector to store the primary keys.
+            while (getline(recordStream, primarykey, ',')) {
+                pks.emplace_back(primarykey);
             }
-            secondaryIndex.emplace_back(secondaryKey , pks) ;
+            secondaryIndex.emplace_back(secondaryKey, pks);
         }
 
         file.close();
@@ -63,43 +63,41 @@ public:
             return;
         }
         for (const auto &ele: secondaryIndex) {
-            outFile << ele.secondaryKey << '|' ;
-            for(auto& pk : ele.primaryKeys ){
-                outFile << pk  ;
-                if(pk != ele.primaryKeys.back()){
-                    outFile << ',' ;
+            outFile << ele.secondaryKey << '|';
+            for (auto &pk: ele.primaryKeys) {
+                outFile << pk;
+                if (pk != ele.primaryKeys.back()) {
+                    outFile << ',';
                 }
             }
-            outFile << '\n' ;
+            outFile << '\n';
         }
         outFile.close();
     }
 
-    void sortSecondaryIndex(){
-        sort(secondaryIndex.begin() , secondaryIndex.end()) ;
-        for (auto &node : secondaryIndex) {
+    void sortSecondaryIndex() {
+        sort(secondaryIndex.begin(), secondaryIndex.end());
+        for (auto &node: secondaryIndex) {
             sort(node.primaryKeys.begin(), node.primaryKeys.end());
         }
     }
 
-    void addSecondaryNode(const string &secondaryKey, const string & primaryKey , const string &fileName) {
-        vector<string> vec ;
-        vec.push_back(primaryKey) ;
-        secondaryIndex.emplace_back(secondaryKey , vec) ;
+    void addSecondaryNode(const string &secondaryKey, const string &primaryKey, const string &fileName) {
+        vector<string> vec;
+        vec.push_back(primaryKey);
+        secondaryIndex.emplace_back(secondaryKey, vec);
         sortSecondaryIndex();
         updateSecondaryIndexFile(fileName);
     }
 
-    void addPrimaryKeyInSecondaryNode(const string &secondaryKey, const string &primarykey , const string &fileName)
-    {
-        int index = binarySearchSecondaryIndex(secondaryKey) ;
-        if(index == -1){
-            addSecondaryNode(secondaryKey , primarykey , fileName) ;
-        }
-        else{
-            secondaryIndex[index].primaryKeys.emplace_back(primarykey) ;
-            sortSecondaryIndex() ;
-            updateSecondaryIndexFile(fileName) ;
+    void addPrimaryKeyInSecondaryNode(const string &secondaryKey, const string &primarykey, const string &fileName) {
+        int index = binarySearchSecondaryIndex(secondaryKey);
+        if (index == -1) {
+            addSecondaryNode(secondaryKey, primarykey, fileName);
+        } else {
+            secondaryIndex[index].primaryKeys.emplace_back(primarykey);
+            sortSecondaryIndex();
+            updateSecondaryIndexFile(fileName);
         }
     }
 
@@ -126,7 +124,8 @@ public:
         cerr << "Error: Secondary key not found.\n";
     }
 
-    void removePrimaryKeyFromSecondaryNode(const string &secondaryKey, const string &primaryKey, const string &fileName) {
+    void
+    removePrimaryKeyFromSecondaryNode(const string &secondaryKey, const string &primaryKey, const string &fileName) {
         int indexNode = binarySearchSecondaryIndex(secondaryKey); // Find node
         if (indexNode == -1) {
             cerr << "Error: Secondary key not found in index.\n";
@@ -135,7 +134,8 @@ public:
 
         int indexKey = binarySearchPrimaryKeys(indexNode, primaryKey); // Find key
         if (indexKey == -1) {
-            cerr << "Error: Primary key " << primaryKey << " not found in secondary node with key " << secondaryKey << ".\n";
+            cerr << "Error: Primary key " << primaryKey << " not found in secondary node with key " << secondaryKey
+                 << ".\n";
             return;
         }
 
@@ -158,7 +158,7 @@ public:
         while (left <= right) {
             int mid = left + (right - left) / 2;
             if (secondaryIndex[mid].secondaryKey == secondaryKey) {
-                return mid ;
+                return mid;
             } else if (secondaryKey < secondaryIndex[mid].secondaryKey) {
                 right = mid - 1;
             } else {
@@ -185,13 +185,13 @@ public:
         }
         return -1; // Not found
     }
+
     vector<string> getPrimaryKeys(int indexNode) const {
         if (indexNode >= 0 && indexNode < secondaryIndex.size()) {
             return secondaryIndex[indexNode].primaryKeys;
         }
         return {};
     }
-
 
 };
 

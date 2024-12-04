@@ -1,5 +1,6 @@
 #ifndef HEALTHCAREMANAGEMENTSYSTEM_APPOINTMENTMANAGEMENTSYSTEM_H
 #define HEALTHCAREMANAGEMENTSYSTEM_APPOINTMENTMANAGEMENTSYSTEM_H
+
 #include <bits/stdc++.h>
 #include "Appointment.h"
 #include "DoctorManagementSystem.h"
@@ -25,7 +26,7 @@ public:
     void addAppointment(Appointment &appointment) {
 
         doctorPrimaryIndex.loadPrimaryIndexInMemory("DoctorPrimaryIndex.txt");
-        if ( doctorPrimaryIndex.binarySearchPrimaryIndex(appointment.doctorID)==-1){
+        if (doctorPrimaryIndex.binarySearchPrimaryIndex(appointment.doctorID) == -1) {
             cout << "Error: Doctor ID " << appointment.doctorID << " does not exist, Cannot add appointment.\n";
             return;
         }
@@ -41,41 +42,42 @@ public:
                               static_cast<int>(appointment.date.size()) +
                               static_cast<int>(appointment.doctorID.size()) + 4;
 
-        AvailListNode* node = appointmentAvailList.bestFit(lengthIndicator);
+        AvailListNode *node = appointmentAvailList.bestFit(lengthIndicator);
 
-        string newRecord = "" ;
-        int offset  ;
+        string newRecord = "";
+        int offset;
 
         if (node != nullptr) { // node is found with appropriate size
             file.seekp(node->offset, ios::beg);
-            file.put(' ') ;
+            file.put(' ');
 
             file.seekp(3, ios::cur);
 
-            newRecord +=  "|" + appointment.id + "|" + appointment.date + "|" + appointment.doctorID + "|";
+            newRecord += "|" + appointment.id + "|" + appointment.date + "|" + appointment.doctorID + "|";
 
-            int padding = node->size - static_cast<int>(newRecord.size()) ;
+            int padding = node->size - static_cast<int>(newRecord.size());
 
             if (padding >= 0) {
-                newRecord.append(padding , '-');
+                newRecord.append(padding, '-');
             } else {
                 cerr << "Error: Record size exceeds node size in availList!" << endl;
                 file.close();
                 return;
             }
 
-            newRecord += '\n' ;
+            newRecord += '\n';
 
             file.write(newRecord.c_str(), node->size);
             offset = node->offset;
-            appointmentAvailList.remove(node,"AppointmentAvailList.txt");
+            appointmentAvailList.remove(node, "AppointmentAvailList.txt");
 
         } else {
-            newRecord += " |" ;
+            newRecord += " |";
             if (lengthIndicator < 10) {
                 newRecord += '0';
             }
-            newRecord += to_string(lengthIndicator) + "|" + appointment.id + "|" + appointment.date + "|" + appointment.doctorID + "|\n";
+            newRecord += to_string(lengthIndicator) + "|" + appointment.id + "|" + appointment.date + "|" +
+                         appointment.doctorID + "|\n";
 
             file.seekp(0, ios::end);
             offset = static_cast<int>(file.tellp());
@@ -85,8 +87,9 @@ public:
         cout << "Appointment with ID " << appointment.id << " is added." << endl;
 
         file.close();
-        appointmentPrimaryIndex.addPrimaryNode(appointment.id,offset,"AppointmentPrimaryIndex.txt");
-        appointmentSecondaryIndex.addPrimaryKeyInSecondaryNode(appointment.doctorID, appointment.id, "AppointmentSecondaryIndex.txt");
+        appointmentPrimaryIndex.addPrimaryNode(appointment.id, offset, "AppointmentPrimaryIndex.txt");
+        appointmentSecondaryIndex.addPrimaryKeyInSecondaryNode(appointment.doctorID, appointment.id,
+                                                               "AppointmentSecondaryIndex.txt");
 
 
     }
@@ -132,7 +135,8 @@ public:
 
         if (newSize <= oldSize) {
             // Overwrite the date field with padding if necessary
-            int writeOffset = offset + status.size() + 1 + recordLen.size() + 1 + record_id.size() + 1; // Calculate position dynamically
+            int writeOffset = offset + status.size() + 1 + recordLen.size() + 1 + record_id.size() +
+                              1; // Calculate position dynamically
             appointmentFile.seekp(writeOffset, ios::beg);
 
             newDate.append(oldSize - newSize, '-'); // Pad with '-' if new date is shorter
@@ -164,7 +168,7 @@ public:
 
         appointmentFile.put('*'); // Overwrite the status byte with '*'
 
-        appointmentFile.seekg(-1,ios::cur) ;
+        appointmentFile.seekg(-1, ios::cur);
         string line;
         getline(appointmentFile, line); // Read the record at the offset
 
@@ -184,13 +188,13 @@ public:
 
         appointmentFile.close();
 
-        AvailListNode* newNode= new AvailListNode(offset , lengthIndicator) ;
-        appointmentAvailList.insert(newNode,"AppointmentAvailList.txt");
+        AvailListNode *newNode = new AvailListNode(offset, lengthIndicator);
+        appointmentAvailList.insert(newNode, "AppointmentAvailList.txt");
 
         // Remove the appointment from the primary index and update the file
-        appointmentPrimaryIndex.removePrimaryNode(id,"AppointmentPrimaryIndex.txt");
+        appointmentPrimaryIndex.removePrimaryNode(id, "AppointmentPrimaryIndex.txt");
         appointmentSecondaryIndex.removePrimaryKeyFromSecondaryNode(doctorID, id, "AppointmentSecondaryIndex.txt");
-        
+
     }
 
     void printAppointmentInfo(const string &id) {
@@ -234,6 +238,7 @@ public:
 
         file.close();
     }
+
     void searchAppointmentsByDoctorID(const string &doctorID) {
         int indexNode = appointmentSecondaryIndex.binarySearchSecondaryIndex(doctorID);
 
@@ -248,7 +253,7 @@ public:
             return;
         }
 
-        for (const string &appointmentID : appointmentIDs) {
+        for (const string &appointmentID: appointmentIDs) {
 
             printAppointmentInfo(appointmentID);
         }
