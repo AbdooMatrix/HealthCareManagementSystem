@@ -185,6 +185,12 @@ public:
         }
         return -1; // Not found
     }
+    vector<string> getPrimaryKeys(int indexNode) const {
+        if (indexNode >= 0 && indexNode < secondaryIndex.size()) {
+            return secondaryIndex[indexNode].primaryKeys;
+        }
+        return {};
+    }
 
 
 };
