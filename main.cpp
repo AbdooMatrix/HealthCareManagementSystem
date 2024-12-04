@@ -42,8 +42,8 @@ int main() {
     cout << "Welcome to Your Health Care Management System\n";
     int choice = -1;
 
-    DoctorManagementSystem sys;
-    AppointmentManagementSystem appoSys;
+    DoctorManagementSystem doctorSystem;
+    AppointmentManagementSystem appointmentSystem;
 
     while (choice != 0) {
         cout <<
@@ -74,7 +74,7 @@ int main() {
             doctor.name = name;
             doctor.address = address;
 
-            sys.addDoctor(doctor);
+            doctorSystem.addDoctor(doctor);
             checkContinue();
         }
         else if (choice == 2) {
@@ -91,7 +91,7 @@ int main() {
             appointment.date = date;
             appointment.doctorID = doctorID;
 
-            appoSys.addAppointment(appointment);
+            appointmentSystem.addAppointment(appointment);
             checkContinue();
         }
         else if (choice == 3) {
@@ -106,7 +106,7 @@ int main() {
             getline(cin, newName);
             trim(newName) ;
 
-            sys.updateDoctorName(id , newName);
+            doctorSystem.updateDoctorName(id , newName);
             checkContinue();
         }
         else if (choice == 4) {
@@ -120,35 +120,35 @@ int main() {
             getline(cin, newDate);
             trim(newDate) ;
 
-            appoSys.updateAppointmentDate(id , newDate);
+            appointmentSystem.updateAppointmentDate(id , newDate);
             checkContinue();
         }
         else if (choice == 5) {
             string id;
             cout << "Please enter the Appointment's ID you want to delete: ";
             cin >> id;
-            appoSys.deleteAppointment(id);
+            appointmentSystem.deleteAppointment(id);
             checkContinue();
         }
         else if (choice == 6) {
             string id;
             cout << "Please enter the Doctor's ID you want to delete: ";
             cin >> id;
-            sys.deleteDoctor(id);
+            doctorSystem.deleteDoctor(id);
             checkContinue();
         }
         else if (choice == 7) {
             string id;
             cout << "Please enter the Doctor's ID you want to search on: ";
             cin >> id;
-            sys.printDoctorInfo(id);
+            doctorSystem.printDoctorInfo(id);
             checkContinue();
         }
         else if (choice == 8) {
             string id;
             cout << "Please enter the Appointment's ID you want to search on: ";
             cin >> id;
-            appoSys.printAppointmentInfo(id);
+            appointmentSystem.printAppointmentInfo(id);
             checkContinue();
         }
         else if (choice == 9) {
