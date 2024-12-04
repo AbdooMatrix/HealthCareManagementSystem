@@ -365,4 +365,6 @@ CMakeFiles/HealthCareManagementSystem.dir/main.cpp.obj: \
  C:\Users\dell\Documents\GitHub\HealthCareManagementSystem\DoctorManagementSystem.h \
  C:\Users\dell\Documents\GitHub\HealthCareManagementSystem\PrimaryIndex.h \
  C:\Users\dell\Documents\GitHub\HealthCareManagementSystem\SecondaryIndex.h \
- C:\Users\dell\Documents\GitHub\HealthCareManagementSystem\AvailList.h
+ C:\Users\dell\Documents\GitHub\HealthCareManagementSystem\AvailList.h \
+ C:\Users\dell\Documents\GitHub\HealthCareManagementSystem\Appointment.h \
+ C:\Users\dell\Documents\GitHub\HealthCareManagementSystem\AppointmentManagementSystem.h

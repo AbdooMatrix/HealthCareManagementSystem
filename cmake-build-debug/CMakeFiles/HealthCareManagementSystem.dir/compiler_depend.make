@@ -363,6 +363,8 @@ CMakeFiles/HealthCareManagementSystem.dir/main.cpp.obj: C:/Users/dell/Documents/
   C:/Program\ Files/JetBrains/CLion\ 2024.3/bin/mingw/x86_64-w64-mingw32/include/vadefs.h \
   C:/Program\ Files/JetBrains/CLion\ 2024.3/bin/mingw/x86_64-w64-mingw32/include/wchar.h \
   C:/Program\ Files/JetBrains/CLion\ 2024.3/bin/mingw/x86_64-w64-mingw32/include/wctype.h \
+  C:/Users/dell/Documents/GitHub/HealthCareManagementSystem/Appointment.h \
+  C:/Users/dell/Documents/GitHub/HealthCareManagementSystem/AppointmentManagementSystem.h \
   C:/Users/dell/Documents/GitHub/HealthCareManagementSystem/AvailList.h \
   C:/Users/dell/Documents/GitHub/HealthCareManagementSystem/Doctor.h \
   C:/Users/dell/Documents/GitHub/HealthCareManagementSystem/DoctorManagementSystem.h \
@@ -499,6 +501,8 @@ C:/Program\ Files/JetBrains/CLion\ 2024.3/bin/mingw/lib/gcc/x86_64-w64-mingw32/1
 C:/Program\ Files/JetBrains/CLion\ 2024.3/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_iterator_base_types.h:
 
 C:/Program\ Files/JetBrains/CLion\ 2024.3/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/forward_list.h:
+
+C:/Users/dell/Documents/GitHub/HealthCareManagementSystem/Appointment.h:
 
 C:/Program\ Files/JetBrains/CLion\ 2024.3/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/cpp_type_traits.h:
 
@@ -671,6 +675,8 @@ C:/Program\ Files/JetBrains/CLion\ 2024.3/bin/mingw/lib/gcc/x86_64-w64-mingw32/1
 C:/Program\ Files/JetBrains/CLion\ 2024.3/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/shared_ptr_atomic.h:
 
 C:/Program\ Files/JetBrains/CLion\ 2024.3/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/shared_ptr.h:
+
+C:/Users/dell/Documents/GitHub/HealthCareManagementSystem/AppointmentManagementSystem.h:
 
 C:/Program\ Files/JetBrains/CLion\ 2024.3/bin/mingw/x86_64-w64-mingw32/include/wchar.h:
 

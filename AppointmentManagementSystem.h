@@ -17,7 +17,7 @@ private:
 public:
     AppointmentManagementSystem() {
         appointmentPrimaryIndex.loadPrimaryIndexInMemory("AppointmentPrimaryIndex.txt");
-        appointmentAvailList.loadAvailListInMemory("appointments.txt");
+        appointmentAvailList.loadAvailListInMemory("AppointmentAvailList.txt");
     }
 
     void addAppointment(Appointment &appointment) {
@@ -88,8 +88,6 @@ public:
 
     }
 
-
-
     void updateAppointmentDate(const string &id, string &newDate) {
         // Locate the record using the primary index
         int offset = appointmentPrimaryIndex.binarySearchPrimaryIndex(id);
@@ -145,8 +143,6 @@ public:
         appointmentFile.close();
     }
 
-
-
     void deleteAppointment(const string &id) {
         int offset = appointmentPrimaryIndex.binarySearchPrimaryIndex(id);
         if (offset == -1) {
@@ -191,7 +187,6 @@ public:
         // Remove the appointment from the primary index and update the file
         appointmentPrimaryIndex.removePrimaryNode(id,"AppointmentPrimaryIndex.txt");
     }
-
 
     void printAppointmentInfo(const string &id) {
         int offSet = appointmentPrimaryIndex.binarySearchPrimaryIndex(id);

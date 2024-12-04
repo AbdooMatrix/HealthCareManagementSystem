@@ -31,11 +31,10 @@ class PrimaryIndex {
 public:
     string getNewId() {
         if (primaryIndex.empty()) {
-            return "1";
+            return "01";  // Start with a two-digit ID
         } else {
-            int newId = stoi(primaryIndex.back().primaryKey);
-            newId++;
-            return to_string(newId);
+            int newId = stoi(primaryIndex.back().primaryKey) + 1;
+            return (newId < 10) ? "0" + to_string(newId) : to_string(newId);
         }
     }
 

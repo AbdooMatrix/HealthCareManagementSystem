@@ -23,7 +23,7 @@ public:
     }
 
     void addDoctor(Doctor &doctor) {
-        doctor.id = doctorPrimaryIndex.getNewId(); //wessam ali -->   9
+        doctor.id = doctorPrimaryIndex.getNewId();
 
         fstream file("doctors.txt", ios::in | ios::out);
         if (!file.is_open()) {
@@ -35,55 +35,50 @@ public:
                               static_cast<int>(doctor.name.size()) +
                               static_cast<int>(doctor.address.size()) + 4;
 
+
         AvailListNode *node = doctorAvailList.bestFit(lengthIndicator);
 
         string newRecord = "";
         int offset;
 
-        if (node != nullptr) { // node is found with appropriate size
+        if (node != nullptr) { // Node is found with appropriate size
             file.seekp(node->offset, ios::beg);
-            file.put(' ');
+            file.put(' '); // Mark the record as active
 
             file.seekp(3, ios::cur);
 
             newRecord += "|" + doctor.id + "|" + doctor.name + "|" + doctor.address + "|";
 
             int padding = node->size - static_cast<int>(newRecord.size());
-
             if (padding >= 0) {
                 newRecord.append(padding, '-');
-            } else {
-                cerr << "Error: Record size exceeds node size in doctorAvailList!" << endl;
-                file.close();
-                return;
             }
 
             newRecord += '\n';
-
             file.write(newRecord.c_str(), node->size);
             offset = node->offset;
-            doctorAvailList.remove(node, "DoctorAvailList.txt");
 
-        } else {
+            doctorAvailList.remove(node, "DoctorAvailList.txt");
+        } else { // No suitable node found, append to the end of the file
             newRecord += " |";
             if (lengthIndicator < 10) {
                 newRecord += '0';
             }
-            newRecord +=
-                    to_string(lengthIndicator) + "|" + doctor.id + "|" + doctor.name + "|" + doctor.address + "|\n";
+            newRecord += to_string(lengthIndicator) + "|" + doctor.id + "|" + doctor.name + "|" + doctor.address + "|\n";
 
             file.seekp(0, ios::end);
             offset = static_cast<int>(file.tellp());
             file.write(newRecord.c_str(), newRecord.size());
         }
 
-        cout << "Doctor " << doctor.name << " is added with id " << doctor.id << endl;
+        cout << "Doctor " << doctor.name << " is added with ID " << doctor.id << endl;
 
         file.close();
 
         doctorPrimaryIndex.addPrimaryNode(doctor.id, offset, "DoctorPrimaryIndex.txt");
         doctorSecondaryIndex.addPrimaryKeyInSecondaryNode(doctor.name, doctor.id, "DoctorSecondaryIndex.txt");
     }
+
 
     void updateDoctorName(const string &id, string &newName) {
         int offset = doctorPrimaryIndex.binarySearchPrimaryIndex(id);
