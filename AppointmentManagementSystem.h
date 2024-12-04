@@ -14,10 +14,12 @@ private:
     PrimaryIndex appointmentPrimaryIndex;  // Primary index for Appointment ID
     AvailList appointmentAvailList;
     PrimaryIndex doctorPrimaryIndex;
+    SecondaryIndex appointmentSecondaryIndex;
 public:
     AppointmentManagementSystem() {
         appointmentPrimaryIndex.loadPrimaryIndexInMemory("AppointmentPrimaryIndex.txt");
         appointmentAvailList.loadAvailListInMemory("AppointmentAvailList.txt");
+        appointmentSecondaryIndex.loadSecondaryIndexInMemory("AppointmentSecondaryIndex.txt");
     }
 
     void addAppointment(Appointment &appointment) {
@@ -84,6 +86,7 @@ public:
 
         file.close();
         appointmentPrimaryIndex.addPrimaryNode(appointment.id,offset,"AppointmentPrimaryIndex.txt");
+        appointmentSecondaryIndex.addPrimaryKeyInSecondaryNode(appointment.doctorID, appointment.id, "AppointmentSecondaryIndex.txt");
 
 
     }
@@ -186,6 +189,8 @@ public:
 
         // Remove the appointment from the primary index and update the file
         appointmentPrimaryIndex.removePrimaryNode(id,"AppointmentPrimaryIndex.txt");
+        appointmentSecondaryIndex.removePrimaryKeyFromSecondaryNode(doctorID, id, "AppointmentSecondaryIndex.txt");
+        
     }
 
     void printAppointmentInfo(const string &id) {
@@ -228,6 +233,25 @@ public:
         cout << "Doctor ID: " << doctorID << endl;
 
         file.close();
+    }
+    void searchAppointmentsByDoctorID(const string &doctorID) {
+        int indexNode = appointmentSecondaryIndex.binarySearchSecondaryIndex(doctorID);
+
+        if (indexNode == -1) {
+            cout << "No appointments found for Doctor ID: " << doctorID << endl;
+            return;
+        }
+        vector<string> appointmentIDs = appointmentSecondaryIndex.getPrimaryKeys(indexNode);
+
+        if (appointmentIDs.empty()) {
+            cout << "No appointments found for Doctor ID: " << doctorID << endl;
+            return;
+        }
+
+        for (const string &appointmentID : appointmentIDs) {
+
+            printAppointmentInfo(appointmentID);
+        }
     }
 
 };
