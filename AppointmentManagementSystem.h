@@ -18,17 +18,19 @@ private:
     SecondaryIndex appointmentSecondaryIndex;
 public:
     AppointmentManagementSystem() {
-        appointmentPrimaryIndex.loadPrimaryIndexInMemory("AppointmentPrimaryIndex.txt");
-        appointmentAvailList.loadAvailListInMemory("AppointmentAvailList.txt");
-        appointmentSecondaryIndex.loadSecondaryIndexInMemory("AppointmentSecondaryIndex.txt");
+        appointmentPrimaryIndex.setPrimaryIndexFileName("AppointmentPrimaryIndex.txt");
+        appointmentAvailList.setAvailListFileName("AppointmentAvailList.txt");
+        appointmentSecondaryIndex.setSecondaryIndexAndLabelIdListFileNames("AppointmentSecondaryIndex.txt",
+                                                                           "AppointmentLabelIdList.txt");
+        doctorPrimaryIndex.setPrimaryIndexFileName("DoctorPrimaryIndex.txt");
     }
 
-    PrimaryIndex& getAppointmentPrimaryIndex() { return appointmentPrimaryIndex; }
-    SecondaryIndex& getAppointmentSecondaryIndex() { return appointmentSecondaryIndex; }
+    PrimaryIndex &getAppointmentPrimaryIndex() { return appointmentPrimaryIndex; }
+
+    SecondaryIndex &getAppointmentSecondaryIndex() { return appointmentSecondaryIndex; }
 
     void addAppointment(Appointment &appointment) {
 
-        doctorPrimaryIndex.loadPrimaryIndexInMemory("DoctorPrimaryIndex.txt");
         if (doctorPrimaryIndex.binarySearchPrimaryIndex(appointment.doctorID) == -1) {
             cout << "Error: Doctor ID " << appointment.doctorID << " does not exist, Cannot add appointment.\n";
             return;
@@ -91,9 +93,7 @@ public:
 
         file.close();
         appointmentPrimaryIndex.addPrimaryNode(appointment.id, offset, "AppointmentPrimaryIndex.txt");
-        appointmentSecondaryIndex.addPrimaryKeyInSecondaryNode(appointment.doctorID, appointment.id,
-                                                               "AppointmentSecondaryIndex.txt");
-
+        appointmentSecondaryIndex.addPrimaryKeyToSecondaryNode(appointment.doctorID, appointment.id);
 
     }
 
@@ -192,11 +192,11 @@ public:
         appointmentFile.close();
 
         AvailListNode *newNode = new AvailListNode(offset, lengthIndicator);
-        appointmentAvailList.insert(newNode, "AppointmentAvailList.txt");
+        appointmentAvailList.insert(newNode);
 
         // Remove the appointment from the primary index and update the file
         appointmentPrimaryIndex.removePrimaryNode(id, "AppointmentPrimaryIndex.txt");
-        appointmentSecondaryIndex.removePrimaryKeyFromSecondaryNode(doctorID, id, "AppointmentSecondaryIndex.txt");
+        appointmentSecondaryIndex.removePrimaryKeyFromSecondaryNode(doctorID, id);
 
     }
 
@@ -243,13 +243,7 @@ public:
     }
 
     void searchAppointmentsByDoctorID(const string &doctorID) {
-        int indexNode = appointmentSecondaryIndex.binarySearchSecondaryIndex(doctorID);
-
-        if (indexNode == -1) {
-            cout << "No appointments found for Doctor ID: " << doctorID << endl;
-            return;
-        }
-        vector<string> appointmentIDs = appointmentSecondaryIndex.getPrimaryKeys(indexNode);
+        vector<string> appointmentIDs = appointmentSecondaryIndex.getPrimaryKeysBySecondaryKey(doctorID);
 
         if (appointmentIDs.empty()) {
             cout << "No appointments found for Doctor ID: " << doctorID << endl;
@@ -257,11 +251,11 @@ public:
         }
 
         for (const string &appointmentID: appointmentIDs) {
-
             printAppointmentInfo(appointmentID);
         }
     }
-vector<string> searchByDate(const string& date) {
+
+    vector<string> searchByDate(const string &date) {
         // Using the appointment’s secondary index to search by date
         vector<string> appointmentIds = appointmentSecondaryIndex.getPrimaryKeysBySecondaryKey(date);
         return appointmentIds;
@@ -296,7 +290,7 @@ vector<string> searchByDate(const string& date) {
     }
 
     void printAllAppointments() {
-        ifstream file("appointments.txt",ios::in );
+        ifstream file("appointments.txt", ios::in);
         if (!file) {
             cerr << "Error opening appointments file.\n";
             return;
@@ -369,33 +363,33 @@ vector<string> searchByDate(const string& date) {
         file.close();
     }
 
-    void printAppointmentId(const string& appointmentId) {
-    ifstream file("appointments.txt");
-    if (!file.is_open()) {
-        cout << "Error: Unable to open the appointments file.\n";
-        return;
-    }
-
-    string line;
-    while (getline(file, line)) {
-        // Parse the line to extract the ID
-        size_t idStart = line.find('|', line.find('|') + 1) + 1;
-        size_t idEnd = line.find('|', idStart);
-
-        string id = line.substr(idStart, idEnd - idStart);
-
-        if (id == appointmentId) {
-            cout << id << endl;  // Print the appointment ID
-            file.close();
+    void printAppointmentId(const string &appointmentId) {
+        ifstream file("appointments.txt");
+        if (!file.is_open()) {
+            cout << "Error: Unable to open the appointments file.\n";
             return;
         }
+
+        string line;
+        while (getline(file, line)) {
+            // Parse the line to extract the ID
+            size_t idStart = line.find('|', line.find('|') + 1) + 1;
+            size_t idEnd = line.find('|', idStart);
+
+            string id = line.substr(idStart, idEnd - idStart);
+
+            if (id == appointmentId) {
+                cout << id << endl;  // Print the appointment ID
+                file.close();
+                return;
+            }
+        }
+
+        cout << "appointment with ID " << appointmentId << " not found.\n";
+        file.close();
     }
 
-    cout << "appointment with ID " << appointmentId << " not found.\n";
-    file.close();
-}
-
-void printAppointmentDate(const string& appointmentId) {
+    void printAppointmentDate(const string &appointmentId) {
         ifstream file("appointments.txt");
         if (!file.is_open()) {
             cout << "Error: Unable to open the appointments file.\n";
@@ -423,38 +417,38 @@ void printAppointmentDate(const string& appointmentId) {
 
         cout << "appointment with ID " << appointmentId << " not found.\n";
         file.close();
-}
-
-void printAppointmentDoctorid(const string& appointmentId) {
-    ifstream file("appointments.txt");
-    if (!file.is_open()) {
-        cout << "Error: Unable to open the appointments file.\n";
-        return;
     }
 
-    string line;
-    while (getline(file, line)) {
-        // Parse the line to extract the ID
-        size_t idStart = line.find('|', line.find('|') + 1) + 1;
-        size_t idEnd = line.find('|', idStart);
-
-        string id = line.substr(idStart, idEnd - idStart);
-
-        if (id == appointmentId) {
-            // Extract the doctor id
-            size_t doctoridStart = line.find('|', line.find('|', line.find('|', line.find('|') + 1) + 1) + 1) + 1;
-            size_t doctoridEnd = line.find('|', doctoridStart);
-
-            string doctorid = line.substr(doctoridStart, doctoridEnd - doctoridStart);
-            cout << doctorid << endl;  // Print the Doctor id
-            file.close();
+    void printAppointmentDoctorid(const string &appointmentId) {
+        ifstream file("appointments.txt");
+        if (!file.is_open()) {
+            cout << "Error: Unable to open the appointments file.\n";
             return;
         }
-    }
 
-    cout << "appointment with ID " << appointmentId << " not found.\n";
-    file.close();
-}
+        string line;
+        while (getline(file, line)) {
+            // Parse the line to extract the ID
+            size_t idStart = line.find('|', line.find('|') + 1) + 1;
+            size_t idEnd = line.find('|', idStart);
+
+            string id = line.substr(idStart, idEnd - idStart);
+
+            if (id == appointmentId) {
+                // Extract the doctor id
+                size_t doctoridStart = line.find('|', line.find('|', line.find('|', line.find('|') + 1) + 1) + 1) + 1;
+                size_t doctoridEnd = line.find('|', doctoridStart);
+
+                string doctorid = line.substr(doctoridStart, doctoridEnd - doctoridStart);
+                cout << doctorid << endl;  // Print the Doctor id
+                file.close();
+                return;
+            }
+        }
+
+        cout << "appointment with ID " << appointmentId << " not found.\n";
+        file.close();
+    }
 };
 
 #endif // HEALTHCAREMANAGEMENTSYSTEM_APPOINTMENTMANAGEMENTSYSTEM_H

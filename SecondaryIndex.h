@@ -22,6 +22,23 @@ private:
     vector<PrimaryKeyNode> primaryKeyList; // Vector storing PrimaryKeyNodes as a linked list
 
 public:
+    int getFreeLabelIndex() {
+        for (int index = 0; index < primaryKeyList.size(); ++index) {
+            if (primaryKeyList[index].nextIndex == "##") {
+                return index;
+            }
+        }
+        primaryKeyList.emplace_back("##", "##");
+        return primaryKeyList.size() - 1;
+    }
+
+    void releaseLabelId(int index) {
+        if (index >= 0 && index < primaryKeyList.size()) {
+            primaryKeyList[index].primaryKey = "##";
+            primaryKeyList[index].nextIndex = "##"; // Mark as free
+        }
+    }
+
     void setSecondaryIndexAndLabelIdListFileNames(const string& secondaryIndex, const string& labelIdFileName) {
         this->secondaryIndexFileName = secondaryIndex;
         this->labelIdListFileName = labelIdFileName;
@@ -88,7 +105,8 @@ public:
             return;
         }
         for (const auto &entry : secondaryIndexMap) {
-            secFile << entry.first << "|" << entry.second << '\n';
+            secFile << entry.first << "|"
+            << setw(2) << setfill('0') << entry.second << '\n';
         }
         secFile.close();
 
@@ -103,7 +121,7 @@ public:
             // Ensure fixed width formatting for recNo (2 bytes) and nextPtr (2 bytes)
             labelFile << setw(2) << setfill('0') << recNo << "|"
                       << setw(2) << setfill('0') << node.primaryKey << ","
-                      << node.nextIndex << '\n';  // Writing nextIndex as a string
+                      << setw(2) << setfill('0') << node.nextIndex << '\n';  // Writing nextIndex as a string
             recNo++;
         }
         labelFile.close();
@@ -136,6 +154,9 @@ public:
 
         while (currentIndex != -1) {
             if (primaryKeyList[currentIndex].primaryKey == primaryKey) {
+                if (currentIndex == secondaryIndexMap[secondaryKey]) {
+                    secondaryIndexMap[secondaryKey] = stoi(primaryKeyList[currentIndex].nextIndex);
+                }
                 *prevPtr = primaryKeyList[currentIndex].nextIndex; // Update the previous node's nextIndex to current node's nextIndex
                 releaseLabelId(currentIndex);  // Release the label ID of the removed node
                 break;
@@ -163,22 +184,6 @@ public:
         return primaryKeys;
     }
 
-    int getFreeLabelIndex() {
-        for (int index = 0; index < primaryKeyList.size(); ++index) {
-            if (primaryKeyList[index].nextIndex == "##") {
-                return index;
-            }
-        }
-        primaryKeyList.emplace_back("##", "##");
-        return primaryKeyList.size() - 1;
-    }
-
-    void releaseLabelId(int index) {
-        if (index >= 0 && index < primaryKeyList.size()) {
-            primaryKeyList[index].primaryKey = "##";
-            primaryKeyList[index].nextIndex = "##"; // Mark as free
-        }
-    }
 };
 
 #endif //HEALTHCAREMANAGEMENTSYSTEM_SECONDARYINDEX_H
