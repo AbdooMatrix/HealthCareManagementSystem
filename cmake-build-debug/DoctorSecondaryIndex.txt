@@ -1,10 +1,2 @@
-abdo matrix|14
-ahmed hakeem|04
-ahmed mohamed|06,07
-cristiano ronaldo|13
-lioneel messi|10,11
-omar|03
-omar mohamed|08
-percy tau|05
-rede selim|12
-taher mohamed|09
+om|00
+omar|01

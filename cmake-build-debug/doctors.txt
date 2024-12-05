@@ -1,12 +1,3 @@
- |22|03|omar|cairo|-------
- |22|14|abdo matrix|giza|-
- |22|04|ahmed hakeem|giza|
- |20|05|percy tau|cairo|
- |23|06|ahmed mohamed|fisl|
- |26|07|ahmed mohamed|october|
- |23|08|omar mohamed|haram|
- |24|09|taher mohamed|m3ady|
- |26|10|lioneel messi|america|
- |35|11|lioneel messi----|saudi arabia|
- |21|12|rede selim|cairo|
- |35|13|cristiano ronaldo|saudi arabia|
+ |14|03|om|gi|----
+ |15|02|omar|cairo|
+ |10|04|om|ca|
