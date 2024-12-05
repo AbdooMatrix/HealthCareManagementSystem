@@ -249,7 +249,7 @@ public:
              << "  Address: " << address << '\n';
     }
 
-    void doctorPrinter(int choice) {
+    static void printAllDoctors(int choice) {
         ifstream file("doctors.txt", ios::in);
         if (!file) {
             cerr << "Error opening doctor file.\n";

@@ -169,7 +169,7 @@ int main() {
             // Pad the ID with leading zeros to make it 2 characters long
             string paddedId = padInt(id);
 
-            doctorSystem.printDoctorInfo(paddedId);
+            doctorSystem.printAllDoctors(5);
             checkContinue();
         }
         else if (choice == 8) {
@@ -188,7 +188,7 @@ int main() {
             checkContinue();
         }
         else if (choice == 10) {
-            doctorSystem.doctorPrinter(4);
+            doctorSystem.printAllDoctors(4);
             checkContinue();
         }
         else {

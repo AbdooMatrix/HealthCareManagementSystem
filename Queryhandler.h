@@ -117,13 +117,13 @@ private:
 
     void handleDoctorNoCondition(const string &fields) {
         if (fields == "*" || fields == "all") {
-            doctorSystem.doctorPrinter(4);
+            doctorSystem.printAllDoctors(4);
         } else if (fields == "id") {
-            doctorSystem.doctorPrinter(1);
+            doctorSystem.printAllDoctors(1);
         } else if (fields == "name") {
-            doctorSystem.doctorPrinter(2);
+            doctorSystem.printAllDoctors(2);
         } else if (fields == "address") {
-            doctorSystem.doctorPrinter(3);
+            doctorSystem.printAllDoctors(3);
         } else {
             cout << "Invalid field in SELECT query for Doctor.\n";
         }
