@@ -34,15 +34,15 @@ private:
     AvailList doctorAvailList;
 
 public:
-    PrimaryIndex& getDoctorPrimaryIndexByRef(){
-        return doctorPrimaryIndex ;
-    }
-
-    DoctorManagementSystem() {
+        DoctorManagementSystem() {
         doctorPrimaryIndex.setPrimaryIndexFileName("DoctorPrimaryIndex.txt");
         doctorSecondaryIndex.setSecondaryIndexAndLabelIdListFileNames("DoctorSecondaryIndex.txt",
                                                                       "DoctorLabelIdList.txt");
         doctorAvailList.setAvailListFileName("DoctorAvailList.txt");
+    }
+
+    PrimaryIndex &getDoctorPrimaryIndex() {
+        return doctorPrimaryIndex;
     }
 
     void addDoctor(Doctor &doctor) {

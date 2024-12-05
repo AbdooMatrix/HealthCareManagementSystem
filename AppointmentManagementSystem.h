@@ -32,19 +32,19 @@ public:
 // and secondary indexing techniques.
 class AppointmentManagementSystem {
 private:
+    PrimaryIndex &doctorPrimaryIndex;  // Reference to shared doctor primary index.
     PrimaryIndex appointmentPrimaryIndex;  // Manages primary index for appointment IDs.
     AvailList appointmentAvailList;        // Manages available space in the file.
-    PrimaryIndex doctorPrimaryIndex;       // Manages primary index for doctor IDs.
     SecondaryIndex appointmentSecondaryIndex; // Manages secondary index for appointments.
 
 public:
     // Constructor: Initializes file names for the indexes and avail list.
-    AppointmentManagementSystem() {
+    AppointmentManagementSystem(PrimaryIndex &sharedDoctorPrimaryIndex)
+            : doctorPrimaryIndex(sharedDoctorPrimaryIndex) {
         appointmentPrimaryIndex.setPrimaryIndexFileName("AppointmentPrimaryIndex.txt");
         appointmentAvailList.setAvailListFileName("AppointmentAvailList.txt");
         appointmentSecondaryIndex.setSecondaryIndexAndLabelIdListFileNames(
                 "AppointmentSecondaryIndex.txt", "AppointmentLabelIdList.txt");
-        doctorPrimaryIndex.setPrimaryIndexFileName("DoctorPrimaryIndex.txt");
     }
 
     // Provides access to the primary index for appointments.

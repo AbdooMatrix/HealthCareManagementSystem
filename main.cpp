@@ -50,7 +50,8 @@ int main() {
     int choice = -1;
 
     DoctorManagementSystem doctorSystem;
-    AppointmentManagementSystem appointmentSystem;
+    // Pass the shared doctorPrimaryIndex to AppointmentManagementSystem.
+    AppointmentManagementSystem appointmentSystem(doctorSystem.getDoctorPrimaryIndex());
     QueryHandler queryHandler(doctorSystem, appointmentSystem);
 
     while (choice != 0) {
