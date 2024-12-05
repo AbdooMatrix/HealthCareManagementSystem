@@ -59,6 +59,8 @@ public:
 
     // Adds a new appointment to the system.
     void addAppointment(Appointment &appointment) {
+
+
         // Verify that the doctor exists in the doctor index.
         if (doctorPrimaryIndex.binarySearchPrimaryIndex(appointment.doctorID) == -1) {
             cout << "Error: Doctor ID " << appointment.doctorID

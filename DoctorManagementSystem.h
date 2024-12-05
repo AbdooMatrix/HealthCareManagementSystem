@@ -34,6 +34,10 @@ private:
     AvailList doctorAvailList;
 
 public:
+    PrimaryIndex& getDoctorPrimaryIndexByRef(){
+        return doctorPrimaryIndex ;
+    }
+
     DoctorManagementSystem() {
         doctorPrimaryIndex.setPrimaryIndexFileName("DoctorPrimaryIndex.txt");
         doctorSecondaryIndex.setSecondaryIndexAndLabelIdListFileNames("DoctorSecondaryIndex.txt",
