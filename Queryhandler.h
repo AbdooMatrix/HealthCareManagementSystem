@@ -2,6 +2,7 @@
 #define QUERYHANDLER_H
 
 #include <bits/stdc++.h>
+#include <cstring>
 #include "DoctorManagementSystem.h"
 #include "AppointmentManagementSystem.h"
 #include "PrimaryIndex.h"
@@ -215,18 +216,18 @@ void handleAppointmentQuery(const string& fields, const string& condition, Appoi
         cin.ignore(); // Clear input buffer
         string query;
         getline(cin, query);
-
         // Trim and validate query format
         trim(query);
-        if (query.substr(0, 6) != "SELECT" || query.find("FROM") == string::npos) {
+        transform(query.begin(), query.end(), query.begin(),::tolower);
+        if (query.substr(0, 6) != "select" || query.find("from") == string::npos) {
             cout << "Invalid query format. Please use: SELECT <fields> FROM <table> WHERE <condition>;\n";
             return;
         }
 
         // Parse query
-        size_t selectPos = query.find("SELECT");
-        size_t fromPos = query.find("FROM");
-        size_t wherePos = query.find("WHERE");
+        size_t selectPos = query.find("select");
+        size_t fromPos = query.find("from");
+        size_t wherePos = query.find("where");
 
         string fields = query.substr(selectPos + 6, fromPos - (selectPos + 6));
         string table = query.substr(fromPos + 4, (wherePos == string::npos ? query.size() : wherePos) - (fromPos + 4));
@@ -236,9 +237,9 @@ void handleAppointmentQuery(const string& fields, const string& condition, Appoi
         trim(table);
         trim(condition);
 
-        if (table == "doctors") {
+        if (table == "doctors" || table == "Doctors") {
             handleDoctorQuery(fields, condition, doctorSystem);
-        } else if (table == "appointments") {
+        } else if (table == "appointments" || table == "Appointments") {
             handleAppointmentQuery(fields, condition, appointmentSystem);
         } else {
             cout << "Invalid table name. Only 'doctors' and 'appointments' are supported.\n";
