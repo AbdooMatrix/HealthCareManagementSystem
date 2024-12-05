@@ -1,9 +1,10 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <string>
 #include "Doctor.h"
 #include "DoctorManagementSystem.h"
 #include "Appointment.h"
 #include "AppointmentManagementSystem.h"
-#include "Queryhandler.h"
+#include "QueryHandler.h"
 
 using namespace std;
 
@@ -25,12 +26,12 @@ string padInt(int x) {
 }
 
 int main() {
-
     cout << "Welcome to Your Health Care Management System\n";
     int choice = -1;
 
     DoctorManagementSystem doctorSystem;
     AppointmentManagementSystem appointmentSystem;
+    QueryHandler queryHandler(doctorSystem, appointmentSystem);  // Instantiate QueryHandler
 
     while (choice != 0) {
         cout <<
@@ -56,14 +57,13 @@ int main() {
 
             cout << "Enter doctor address: ";
             getline(cin, address);
-            trim(name);
-            trim(address);
             doctor.name = name;
             doctor.address = address;
 
             doctorSystem.addDoctor(doctor);
             checkContinue();
-        } else if (choice == 2) {
+        }
+        else if (choice == 2) {
             Appointment appointment;
             string date, doctorID;
             cout << "Enter the date: ";
@@ -72,89 +72,77 @@ int main() {
 
             cout << "Enter doctor ID: ";
             getline(cin, doctorID);
-            trim(date);
-            trim(doctorID);
             appointment.date = date;
             appointment.doctorID = doctorID;
 
             appointmentSystem.addAppointment(appointment);
             checkContinue();
-        } else if (choice == 3) {
-            // Code for updating doctor name
+        }
+        else if (choice == 3) {
             int id;
-            cout << "Please enter the Doctor's ID you want to change his name: ";
+            cout << "Please enter the Doctor's ID you want to change their name: ";
             cin >> id;
 
-            // Pad the ID with leading zeros to make it 2 characters long
             string paddedId = padInt(id);
-
             string newName;
             cout << "Please enter Doctor's new name: ";
-            cin.ignore(); // Clear input buffer
+            cin.ignore();
             getline(cin, newName);
-
-            // Assume trim is a utility function you defined elsewhere
-            trim(newName);
 
             doctorSystem.updateDoctorName(paddedId, newName);
             checkContinue();
-        } else if (choice == 4) {
+        }
+        else if (choice == 4) {
             string id;
-            cout << "Please enter the Appointment's ID you want to change his date: ";
+            cout << "Please enter the Appointment's ID you want to change its date: ";
             cin >> id;
 
             string newDate;
-            cout << "Please enter new date: ";
-            cin.ignore(); // Clear input buffer
+            cout << "Please enter the new date: ";
+            cin.ignore();
             getline(cin, newDate);
-            trim(newDate);
 
             appointmentSystem.updateAppointmentDate(id, newDate);
             checkContinue();
-        } else if (choice == 5) {
+        }
+        else if (choice == 5) {
             int id;
             cout << "Please enter the Appointment's ID you want to delete: ";
             cin >> id;
-
-            // Pad the ID with leading zeros to make it 2 characters long
             string paddedId = padInt(id);
-
             appointmentSystem.deleteAppointment(paddedId);
             checkContinue();
-        } else if (choice == 6) {
+        }
+        else if (choice == 6) {
             int id;
             cout << "Please enter the Doctor's ID you want to delete: ";
             cin >> id;
-
-            // Pad the ID with leading zeros to make it 2 characters long
             string paddedId = padInt(id);
-
             doctorSystem.deleteDoctor(paddedId);
             checkContinue();
-        } else if (choice == 7) {
+        }
+        else if (choice == 7) {
             int id;
-            cout << "Please enter the Doctor's ID you want to search on: ";
+            cout << "Please enter the Doctor's ID you want to search: ";
             cin >> id;
-
-            // Pad the ID with leading zeros to make it 2 characters long
             string paddedId = padInt(id);
-
             doctorSystem.printDoctorInfo(paddedId);
             checkContinue();
-        } else if (choice == 8) {
+        }
+        else if (choice == 8) {
             int id;
-            cout << "Please enter the Appointment's ID you want to search on: ";
+            cout << "Please enter the Appointment's ID you want to search: ";
             cin >> id;
-
             string paddedId = padInt(id);
-
             appointmentSystem.printAppointmentInfo(paddedId);
             checkContinue();
-        } else if (choice == 9) {
-            handleUserQuery(doctorSystem,appointmentSystem);
-        } else if (choice == 0) {
-            // Exit condition
-        } else {
+        }
+        else if (choice == 9) {
+            cout << "Query Example: select * from doctors where id = '1';\n";
+            queryHandler.handleUserQuery();  // Use QueryHandler instance
+            checkContinue();
+        }
+        else {
             cout << "Enter a valid choice\n";
         }
     }
