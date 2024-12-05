@@ -179,39 +179,11 @@ public:
 
     vector<string> getPrimaryKeysBySecondaryKey(const string &secondaryKey) {
         vector<string> primaryKeys;
-
-        if (secondaryIndexMap.find(secondaryKey) == secondaryIndexMap.end()) {
-            cerr << "Error: Secondary key not found.\n";
-            return primaryKeys;
-        }
-
         int index = secondaryIndexMap[secondaryKey];
-        unordered_set<int> visitedIndices;
-
         while (index != -1) {
-            if (visitedIndices.find(index) != visitedIndices.end()) {
-                cerr << "Error: Circular reference detected.\n";
-                break;
-            }
-            if (index >= primaryKeyList.size()) {
-                cerr << "Error: Index out of bounds.\n";
-                break;
-            }
-
-            visitedIndices.insert(index);
             primaryKeys.push_back(primaryKeyList[index].primaryKey);
-
-            try {
-                index = stoi(primaryKeyList[index].nextIndex);
-            } catch (const invalid_argument&) {
-                cerr << "Error: Invalid nextIndex format.\n";
-                break;
-            } catch (const out_of_range&) {
-                cerr << "Error: nextIndex out of range.\n";
-                break;
-            }
+            index = stoi(primaryKeyList[index].nextIndex);  // Convert string to int for index traversal
         }
-
         return primaryKeys;
     }
 
