@@ -127,26 +127,30 @@ public:
         getline(recordStream, name, '|');
         getline(recordStream, address, '|');
 
-        int oldSize = static_cast<int>(name.size());
-        int newSize = static_cast<int>(newName.size());
+
+        int newSize = newName.size() + record_id.size() + address.size() + 4 ;
 
 
-        if (newSize <= oldSize) {
+        if (newSize <= stoi(recordLen)) {
             doctorSecondaryIndex.removePrimaryKeyFromSecondaryNode(name, id);
             doctorSecondaryIndex.addPrimaryKeyToSecondaryNode(newName, id);
-            size_t nameOffset = offset + status.size() + recordLen.size() + record_id.size() + 3; // Adjust dynamically
-            doctorFile.seekp(nameOffset, ios::beg);
-            newName.resize(oldSize, '-'); // Ensure consistent size
-            doctorFile.write(newName.c_str(), oldSize);
 
-        } else {
+            doctorFile.seekp(offset+8, ios::beg);
+            doctorFile << newName << '|' << address << '|' ;
+
+
+            int excess = stoi(recordLen) - newSize ;
+            for(int i = 0 ; i < excess ; ++i){
+                doctorFile << '-' ;
+            }
+        }
+        else {
             deleteDoctor(record_id);
             Doctor doctor;
             doctor.id = doctorPrimaryIndex.getNewId();
             doctor.name = newName;
             doctor.address = address;
             addDoctor(doctor);
-
         }
         cout << "Doctor's name updated successfully.\n";
 

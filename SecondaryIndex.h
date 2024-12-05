@@ -57,13 +57,13 @@ public:
         while (getline(secFile, line)) {
             istringstream recordStream(line);
             string secondaryKey;
-            int headIndex;
+            string headIndex;
 
             // Parse format: "<SecondaryKey>|<HeadPointer>"
             getline(recordStream, secondaryKey, '|');
-            recordStream >> headIndex;
+            getline(recordStream , headIndex , '|') ;
 
-            secondaryIndexMap[secondaryKey] = headIndex;
+            secondaryIndexMap[secondaryKey] = stoi(headIndex) ;
         }
         secFile.close();
 
@@ -127,18 +127,23 @@ public:
         labelFile.close();
     }
 
-    void addPrimaryKeyToSecondaryNode(const string &secondaryKey, const string &primaryKey) {
+    void addPrimaryKeyToSecondaryNode(const string &secondaryKey, const string &primaryKey) { // name - id
         int freeLabelId = getFreeLabelIndex();  // Get a free label ID
         if (secondaryIndexMap.find(secondaryKey) == secondaryIndexMap.end()) {
             primaryKeyList[freeLabelId] = PrimaryKeyNode(primaryKey, "-1"); // Use free label ID for the new node
             secondaryIndexMap[secondaryKey] = freeLabelId; // Head is the new entry
         } else {
-            int currentIndex = secondaryIndexMap[secondaryKey]; // head index
-            while (primaryKeyList[currentIndex].nextIndex != "-1") {
-                currentIndex = stoi(primaryKeyList[currentIndex].nextIndex);  // Convert string back to int
+            int currentIndex = secondaryIndexMap[secondaryKey]; // first current index will point to head index
+            if(currentIndex == -1){
+                secondaryIndexMap[secondaryKey] = freeLabelId ;
+            }
+            else{
+                while (primaryKeyList[currentIndex].nextIndex != "-1") {
+                    currentIndex = stoi(primaryKeyList[currentIndex].nextIndex);  // Convert string back to int
+                }
+                primaryKeyList[currentIndex].nextIndex = to_string(freeLabelId);  // Store index as string
             }
             primaryKeyList[freeLabelId] = PrimaryKeyNode(primaryKey, "-1");
-            primaryKeyList[currentIndex].nextIndex = to_string(freeLabelId);  // Store index as string
         }
         updateSecondaryIndexAndLabelIdList();
     }
