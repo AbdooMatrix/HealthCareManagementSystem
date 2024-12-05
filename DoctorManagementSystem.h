@@ -11,7 +11,7 @@ using namespace std;
 
 class DoctorManagementSystem {
 private:
-    PrimaryIndex doctorPrimaryIndex;  // Primary index for Doctor ID
+    PrimaryIndex doctorPrimaryIndex;
     SecondaryIndex doctorSecondaryIndex;
     AvailList doctorAvailList;
 
