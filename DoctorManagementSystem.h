@@ -267,7 +267,7 @@ public:
         ifstream doctors("doctors.txt", ios::in);
         ifstream primaryIndexFile("DoctorPrimaryIndex.txt", ios::in);
         if (!doctors) {
-            cerr << "ErrodoctorPrimaryIndexfiler opening doctor file.\n";
+            cerr << "Error opening doctorPrimaryIndex file.\n";
             return;
         }
         if (!primaryIndexFile) {

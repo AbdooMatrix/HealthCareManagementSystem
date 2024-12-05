@@ -5,29 +5,29 @@
 
 using namespace std;
 
+// Trims leading and trailing spaces from a string
 void trim(string &str) {
-    if (str.empty()) {
-        return; // Handle empty string case
-    }
+    if (str.empty()) return;
 
     int i = 0, j = str.size() - 1;
+    while (i <= j && str[i] == ' ') i++;
+    while (j >= i && str[j] == ' ') j--;
 
-    // Move i forward until the first non-space character
-    while (i <= j && str[i] == ' ') {
-        i++;
-    }
-
-    // Move j backward until the last non-space character
-    while (j >= i && str[j] == ' ') {
-        j--;
-    }
-
-    // Update the string only if trimming is required
-    if (i != 0 || (j != str.size() - 1) ) {
+    if (i != 0 || j != str.size() - 1) {
         str = str.substr(i, j - i + 1);
     }
 }
 
+// Converts a string to lowercase
+void toLower(string &str) {
+    for(int i = 0 ; i < str.size() ; ++i) {
+        if (str[i] >= 'A' && str[i] <= 'Z') {
+            str[i] = tolower(str[i]);
+        }
+    }
+}
+
+// Ensures the user presses 'y' to continue
 void checkContinue() {
     char cont = '0';
     while (tolower(cont) != 'y') {
@@ -36,8 +36,8 @@ void checkContinue() {
     }
 }
 
+// Pads an integer with leading zeros to make it two characters long
 string padInt(int x) {
-    // Pad the ID with leading zeros to make it 2 characters long
     string paddedInt = to_string(x);
     if (paddedInt.length() < 2) {
         paddedInt.insert(0, 1, '0');
@@ -46,7 +46,6 @@ string padInt(int x) {
 }
 
 int main() {
-
     cout << "Welcome to Your Health Care Management System\n";
     int choice = -1;
 
@@ -73,33 +72,39 @@ int main() {
         if (choice == 1) {
             Doctor doctor;
             string name, address;
+
             cout << "Enter doctor name: ";
             cin.ignore();
             getline(cin, name);
+            toLower(name);
+            trim(name);
 
             cout << "Enter doctor address: ";
             getline(cin, address);
-            trim(name);
+            toLower(address);
             trim(address);
+
             doctor.name = name;
             doctor.address = address;
 
             doctorSystem.addDoctor(doctor);
             checkContinue();
-
         }
         else if (choice == 2) {
             Appointment appointment;
             string date;
             int doctorID;
+
             cout << "Enter the date: ";
             cin.ignore();
             getline(cin, date);
+            toLower(date);
+            trim(date);
 
             cout << "Enter doctor ID: ";
             cin >> doctorID;
             string paddedDoctorId = padInt(doctorID);
-            trim(date);
+
             appointment.date = date;
             appointment.doctorID = paddedDoctorId;
 
@@ -107,20 +112,17 @@ int main() {
             checkContinue();
         }
         else if (choice == 3) {
-            // Code for updating doctor name
             int id;
             cout << "Please enter the Doctor's ID you want to change his name: ";
             cin >> id;
 
-            // Pad the ID with leading zeros to make it 2 characters long
             string paddedId = padInt(id);
-
             string newName;
-            cout << "Please enter Doctor's new name: ";
-            cin.ignore(); // Clear input buffer
-            getline(cin, newName);
 
-            // Assume trim is a utility function you defined elsewhere
+            cout << "Please enter Doctor's new name: ";
+            cin.ignore();
+            getline(cin, newName);
+            toLower(newName);
             trim(newName);
 
             doctorSystem.updateDoctorName(paddedId, newName);
@@ -128,13 +130,14 @@ int main() {
         }
         else if (choice == 4) {
             string id;
-            cout << "Please enter the Appointment's ID you want to change his date: ";
+            cout << "Please enter the Appointment's ID you want to change its date: ";
             cin >> id;
 
             string newDate;
             cout << "Please enter new date: ";
-            cin.ignore(); // Clear input buffer
+            cin.ignore();
             getline(cin, newDate);
+            toLower(newDate);
             trim(newDate);
 
             appointmentSystem.updateAppointmentDate(id, newDate);
@@ -145,9 +148,7 @@ int main() {
             cout << "Please enter the Appointment's ID you want to delete: ";
             cin >> id;
 
-            // Pad the ID with leading zeros to make it 2 characters long
             string paddedId = padInt(id);
-
             appointmentSystem.deleteAppointment(paddedId);
             checkContinue();
         }
@@ -156,30 +157,25 @@ int main() {
             cout << "Please enter the Doctor's ID you want to delete: ";
             cin >> id;
 
-            // Pad the ID with leading zeros to make it 2 characters long
             string paddedId = padInt(id);
-
             doctorSystem.deleteDoctor(paddedId);
             checkContinue();
         }
         else if (choice == 7) {
             int id;
-            cout << "Please enter the Doctor's ID you want to search on: ";
+            cout << "Please enter the Doctor's ID you want to search for: ";
             cin >> id;
 
-            // Pad the ID with leading zeros to make it 2 characters long
             string paddedId = padInt(id);
-
             doctorSystem.printDoctorById(paddedId, 4);
             checkContinue();
         }
         else if (choice == 8) {
             int id;
-            cout << "Please enter the Appointment's ID you want to search on: ";
+            cout << "Please enter the Appointment's ID you want to search for: ";
             cin >> id;
 
             string paddedId = padInt(id);
-
             appointmentSystem.printAppointmentById(paddedId, 4);
             checkContinue();
         }

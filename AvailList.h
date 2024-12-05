@@ -5,6 +5,10 @@
 
 using namespace std;
 
+bool isNumber(const string &str) {
+    return !str.empty() && all_of(str.begin(), str.end(), ::isdigit);
+}
+
 class AvailListNode {
 public:
     int offset;
@@ -25,10 +29,6 @@ public:
     void setAvailListFileName(const string& fileName) {
         this->availListFileName = fileName;
         loadAvailListInMemory();
-    }
-
-    bool empty() const {
-        return header == nullptr;
     }
 
     void insert(AvailListNode *newNode) {
@@ -98,7 +98,7 @@ public:
         fstream availListFile(availListFileName, ios::in);
 
         if (!availListFile.is_open()) {
-            cerr << "Error opening file: doctors.txt\n";
+            cerr << "Error opening file: " << availListFileName << endl;
             return;
         }
         if (isFileEmpty(availListFileName)) {
@@ -106,15 +106,24 @@ public:
         }
 
         string line;
-
         while (getline(availListFile, line)) {
             istringstream stream(line);
             string offset, size;
             getline(stream, offset, '|');
             getline(stream, size, '|');
 
-            AvailListNode *newNode = new AvailListNode(stoi(offset), stoi(size));
-            insert(newNode);
+            try {
+                if (!offset.empty() && !size.empty() && isNumber(offset) && isNumber(size)) {
+                    AvailListNode *newNode = new AvailListNode(stoi(offset), stoi(size));
+                    insert(newNode);
+                } else {
+                    cerr << "Malformed line: " << line << endl;
+                }
+            } catch (const invalid_argument &e) {
+                cerr << "Invalid number format in line: " << line << endl;
+            } catch (const out_of_range &e) {
+                cerr << "Number out of range in line: " << line << endl;
+            }
         }
     }
 
@@ -136,17 +145,6 @@ public:
             curr = curr->next;
         }
         availFile.close();  // Ensure to close the file after writing
-    }
-
-    void printAvailList() {
-        AvailListNode *curr = header;
-
-        // Traverse through the list and write each node's data to the file
-        while (curr != nullptr) {
-            // Assuming status '*' for available nodes, and writing the size
-            cout << curr->offset << "->" << curr->size << '\n';
-            curr = curr->next;
-        }
     }
 
     ~AvailList() {

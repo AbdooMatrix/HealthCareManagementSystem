@@ -149,7 +149,7 @@ private:
         } else if (key == "name") {
             handleDoctorByName(fields, value);
         } else if (key == "address") {
-//            handleDoctorByAddress(fields, value);
+            handleDoctorByAddress(fields, value);
         } else {
             cout << "Invalid WHERE condition. Valid keys for Doctor are 'ID' or 'Name'.\n";
         }
@@ -205,27 +205,19 @@ private:
         }
     }
 
-//    void handleDoctorByAddress(const string &fields, const string &name) {
-//        vector<string> doctorIds = doctorSystem.searchDoctorsByName(name);
-//        if (doctorIds.empty()) {
-//            cout << "No doctors found with name: " << name << ".\n";
-//            return;
-//        }
-//
-//        for (const string &doctorId: doctorIds) {
-//            if (fields == "*" || fields == "all") {
-//                doctorSystem.printDoctorByName(doctorId, 0);
-//            } else if (fields == "id") {
-//                doctorSystem.printDoctorByName(doctorId, 1);
-//            } else if (fields == "name") {
-//                doctorSystem.printDoctorByName(doctorId, 2);
-//            } else if (fields == "address") {
-//                doctorSystem.printDoctorByName(doctorId, 3);
-//            } else {
-//                cout << "Invalid field for Doctor: " << fields << ".\n";
-//            }
-//        }
-//    }
+    void handleDoctorByAddress(const string &fields, const string &address) {
+        if (fields == "*" || fields == "all") {
+            doctorSystem.printDoctorByAddress(address, 0);
+        } else if (fields == "id") {
+            doctorSystem.printDoctorByAddress(address, 1);
+        } else if (fields == "name") {
+            doctorSystem.printDoctorByAddress(address, 2);
+        } else if (fields == "address") {
+            doctorSystem.printDoctorByAddress(address, 3);
+        } else {
+            cout << "Invalid field for Doctor: " << fields << ".\n";
+        }
+    }
 
     void handleAppointmentQuery(const string &fields, const string &condition) {
         if (condition.empty()) {
