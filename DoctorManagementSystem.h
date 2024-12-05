@@ -22,7 +22,7 @@ public:
     string address; // Doctor's address
 
     // Parameterized constructor to initialize a Doctor object with specific details
-    Doctor(const string& id, const string& name, const string& address)
+    Doctor(const string &id, const string &name, const string &address)
             : id(id), name(name), address(address) {}
 };
 
@@ -251,17 +251,13 @@ public:
 
         if (choice == 0) {
             cout << "ID: " << stoi(record_id) << " | Name: " << name << " | Address: " << address << '\n';
-        }
-        else if (choice == 1) {
+        } else if (choice == 1) {
             cout << "ID: " << stoi(record_id) << '\n';
-        }
-        else if (choice == 2) {
+        } else if (choice == 2) {
             cout << "Name: " << name << '\n';
-        }
-        else if (choice == 3) {
+        } else if (choice == 3) {
             cout << "Address: " << address << '\n';
-        }
-        else {
+        } else {
             cout << "Doctor's info:\n"
                  << "  ID: " << stoi(record_id) << '\n'
                  << "  Name: " << name << '\n'
@@ -278,40 +274,49 @@ public:
     }
 
     static void printAllDoctors(int choice) {
-        ifstream file("doctors.txt", ios::in);
-        if (!file) {
+        ifstream doctors("doctors.txt", ios::in);
+        ifstream primaryIndexFile("DoctorPrimaryIndex.txt", ios::in);
+        if (!doctors) {
+            cerr << "ErrodoctorPrimaryIndexfiler opening doctor file.\n";
+            return;
+        }
+        if (!primaryIndexFile) {
             cerr << "Error opening doctor file.\n";
             return;
         }
 
-        string line;
-        while (getline(file, line)) {
-            if (line[0] != '*') {
-                istringstream recordStream(line);
-                string status, len, id, name, address;
+        string line1, status, len, id, offset, name, address;
+        while (getline(primaryIndexFile, line1)) {
+            istringstream recordStream1(line1);
+            getline(recordStream1, id, '|');
+            getline(recordStream1, offset, '|');
 
-                // Parse the record
-                getline(recordStream, status, '|');
-                getline(recordStream, len, '|');
-                getline(recordStream, id, '|');
-                getline(recordStream, name, '|');
-                getline(recordStream, address, '|');
+            doctors.seekg(stoi(offset), ios::beg);
 
-                if (choice == 0) {
-                    cout << "ID: " << stoi(id) << " | Name: " << name << " | Address: " << address << '\n';
-                }
-                else if (choice == 1) {
-                    cout << "ID: " << stoi(id) << '\n';
-                }
-                else if (choice == 2) {
-                    cout << "Name: " << name << '\n';
-                }
-                else if (choice == 3) {
-                    cout << "Address: " << address << '\n';
-                }
+
+            string line2 ;
+            getline(doctors, line2);
+            istringstream recordStream2(line2);
+
+            getline(recordStream2, status, '|');
+            getline(recordStream2, len, '|');
+            getline(recordStream2, id, '|');
+            getline(recordStream2, name, '|');
+            getline(recordStream2, address, '|');
+
+
+            if (choice == 0) {
+                cout << "ID: " << stoi(id) << " | Name: " << name << " | Address: " << address << '\n';
+            } else if (choice == 1) {
+                cout << "ID: " << stoi(id) << '\n';
+            } else if (choice == 2) {
+                cout << "Name: " << name << '\n';
+            } else if (choice == 3) {
+                cout << "Address: " << address << '\n';
             }
         }
-        file.close();
+        doctors.close();
+        primaryIndexFile.close();
     }
 
 };
