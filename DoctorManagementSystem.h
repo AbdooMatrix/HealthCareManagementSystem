@@ -1,13 +1,31 @@
 #ifndef HEALTHCAREMANAGEMENTSYSTEM_DOCTORMANAGEMENTSYSTEM_H
 #define HEALTHCAREMANAGEMENTSYSTEM_DOCTORMANAGEMENTSYSTEM_H
 
-#include <bits/stdc++.h>
 #include "PrimaryIndex.h"
 #include "SecondaryIndex.h"
-#include "Doctor.h"
 #include "AvailList.h"
 
 using namespace std;
+
+
+// Class representing a doctor in the healthcare management system
+class Doctor {
+public:
+    // Default constructor initializing fields to empty strings
+    Doctor() {
+        id = name = address = "";
+    }
+
+    // Attributes of the Doctor class
+    string id;    // Primary Key - Unique identifier for a doctor
+    string name;  // Secondary Key - Doctor's name, can be used for searching/sorting
+    string address; // Doctor's address
+
+    // Parameterized constructor to initialize a Doctor object with specific details
+    Doctor(const string& id, const string& name, const string& address)
+            : id(id), name(name), address(address) {}
+};
+
 
 class DoctorManagementSystem {
 private:
