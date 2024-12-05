@@ -5,6 +5,29 @@
 
 using namespace std;
 
+void trim(string &str) {
+    if (str.empty()) {
+        return; // Handle empty string case
+    }
+
+    int i = 0, j = str.size() - 1;
+
+    // Move i forward until the first non-space character
+    while (i <= j && str[i] == ' ') {
+        i++;
+    }
+
+    // Move j backward until the last non-space character
+    while (j >= i && str[j] == ' ') {
+        j--;
+    }
+
+    // Update the string only if trimming is required
+    if (i != 0 || (j != str.size() - 1) ) {
+        str = str.substr(i, j - i + 1);
+    }
+}
+
 void checkContinue() {
     char cont = '0';
     while (tolower(cont) != 'y') {
@@ -149,7 +172,7 @@ int main() {
             appointmentSystem.printAppointmentInfo(paddedId);
             checkContinue();
         } else if (choice == 9) {
-            handleUserQuery(doctorSystem,appointmentSystem);
+
         } else if (choice == 0) {
             // Exit condition
         } else {
