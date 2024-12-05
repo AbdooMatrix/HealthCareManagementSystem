@@ -188,7 +188,7 @@ int main() {
             checkContinue();
         }
         else if (choice == 10) {
-            doctorSystem.printAllDoctors(4);
+            doctorSystem.printAllDoctors(0);
             checkContinue();
         }
         else {
