@@ -293,12 +293,12 @@ public:
 
         switch (choice) {
             case 0:  // Print all appointment information
-                cout << "Appointment ID: " << appointmentID
+                cout << "Appointment ID: " << stoi(appointmentID)
                      << " | Date: " << date
                      << " | Doctor ID: " << stoi(doctorID) << '\n';
                 break;
             case 1:  // Print only Appointment ID
-                cout << "Appointment ID: " << appointmentID << '\n';
+                cout << "Appointment ID: " << stoi(appointmentID) << '\n';
                 break;
             case 2:  // Print only Date
                 cout << "Date: " << date << '\n';
@@ -315,13 +315,6 @@ public:
         }
     }
 
-    void printAppointmentByDoctorId(const string &doctorId, int choice) {
-        vector<string> ids = appointmentSecondaryIndex.getPrimaryKeysBySecondaryKey(doctorId);
-
-        for (int i = 0; i < ids.size(); ++i) {
-            printAppointmentById(ids[i], choice);
-        }
-    }
 
     static void printAllAppointments(int choice) {
         ifstream file("appointments.txt", ios::in);

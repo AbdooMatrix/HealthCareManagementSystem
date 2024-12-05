@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 #include "DoctorManagementSystem.h"
 #include "AppointmentManagementSystem.h"
-#include "Queryhandler.h"
+#include "QueryHandler.h"
 
 using namespace std;
 

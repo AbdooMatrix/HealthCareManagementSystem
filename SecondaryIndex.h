@@ -174,12 +174,10 @@ public:
 
     vector<string> getPrimaryKeysBySecondaryKey(const string &secondaryKey) {
         vector<string> primaryKeys;
-        if (secondaryIndexMap.find(secondaryKey) != secondaryIndexMap.end()) {
-            int index = secondaryIndexMap[secondaryKey];
-            while (index != -1) {
-                primaryKeys.push_back(primaryKeyList[index].primaryKey);
-                index = stoi(primaryKeyList[index].nextIndex);  // Convert string to int for index traversal
-            }
+        int index = secondaryIndexMap[secondaryKey];
+        while (index != -1) {
+            primaryKeys.push_back(primaryKeyList[index].primaryKey);
+            index = stoi(primaryKeyList[index].nextIndex);  // Convert string to int for index traversal
         }
         return primaryKeys;
     }

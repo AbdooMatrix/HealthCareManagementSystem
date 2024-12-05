@@ -223,8 +223,6 @@ public:
         string line;
         getline(file, line); // Read the record from the file.
 
-        cout << "The record from file : " << line << endl;
-
         if (line.empty()) {
             cout << "Error: Empty record at offset " << offset << ".\n";
             return;
@@ -265,12 +263,43 @@ public:
         }
     }
 
-    void printDoctorByName(const string &name, int choice) {
-        vector<string> ids = doctorSecondaryIndex.getPrimaryKeysBySecondaryKey(name);
-
-        for (int i = 0; i < ids.size(); ++i) {
-            printDoctorById(ids[i], choice);
+    void printDoctorByAddress(const string &address, int choice) {
+        ifstream doctors("doctors.txt", ios::in);
+        ifstream primaryIndexFile("DoctorPrimaryIndex.txt", ios::in);
+        if (!doctors) {
+            cerr << "ErrodoctorPrimaryIndexfiler opening doctor file.\n";
+            return;
         }
+        if (!primaryIndexFile) {
+            cerr << "Error opening doctor file.\n";
+            return;
+        }
+
+        string primaryIndexLine, status, len, id, offset, name, recAddress;
+        while (getline(primaryIndexFile, primaryIndexLine)) {
+            istringstream recordStream1(primaryIndexLine);
+            getline(recordStream1, id, '|');
+            getline(recordStream1, offset, '|');
+
+            doctors.seekg(stoi(offset), ios::beg);
+
+
+            string doctorLine ;
+            getline(doctors, doctorLine);
+            istringstream recordStream2(doctorLine);
+
+            getline(recordStream2, status, '|');
+            getline(recordStream2, len, '|');
+            getline(recordStream2, id, '|');
+            getline(recordStream2, name, '|');
+            getline(recordStream2, recAddress, '|');
+            if(recAddress == address){
+                cout << "ID: " << stoi(id) << " | Name: " << name << " | Address: " << address << '\n';
+            }
+        }
+        doctors.close();
+        primaryIndexFile.close();
+
     }
 
     void printAllDoctors(int choice) {

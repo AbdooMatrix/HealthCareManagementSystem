@@ -130,11 +130,6 @@ public:
         return -1;
     }
 
-    void printPrimaryIndex() {
-        for (const auto &index: primaryIndex) {
-            cout << index.primaryKey << "-->" << index.offset << endl;
-        }
-    }
 };
 
 
