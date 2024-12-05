@@ -273,7 +273,7 @@ public:
         }
     }
 
-    static void printAllDoctors(int choice) {
+    void printAllDoctors(int choice) {
         ifstream doctors("doctors.txt", ios::in);
         ifstream primaryIndexFile("DoctorPrimaryIndex.txt", ios::in);
         if (!doctors) {

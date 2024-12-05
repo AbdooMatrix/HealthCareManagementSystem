@@ -90,17 +90,18 @@ int main() {
         }
         else if (choice == 2) {
             Appointment appointment;
-            string date, doctorID;
+            string date;
+            int doctorID;
             cout << "Enter the date: ";
             cin.ignore();
             getline(cin, date);
 
             cout << "Enter doctor ID: ";
-            getline(cin, doctorID);
+            cin >> doctorID;
+            string paddedDoctorId = padInt(doctorID);
             trim(date);
-            trim(doctorID);
             appointment.date = date;
-            appointment.doctorID = doctorID;
+            appointment.doctorID = paddedDoctorId;
 
             appointmentSystem.addAppointment(appointment);
             checkContinue();
