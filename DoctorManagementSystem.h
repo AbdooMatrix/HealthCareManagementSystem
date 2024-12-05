@@ -200,9 +200,15 @@ public:
         doctorSecondaryIndex.removePrimaryKeyFromSecondaryNode(name, id);
     }
 
-    void printDoctorInfo(const string &id) {
-        int offSet = doctorPrimaryIndex.binarySearchPrimaryIndex(id);
-        if (offSet == -1) {
+    vector<string> searchDoctorsByName(const string &name) {
+        // Using the doctor’s secondary index to search by name
+        vector<string> doctorIds = doctorSecondaryIndex.getPrimaryKeysBySecondaryKey(name);
+        return doctorIds;
+    }
+
+    void printDoctorById(const string &id, int choice) {
+        int offset = doctorPrimaryIndex.binarySearchPrimaryIndex(id);
+        if (offset == -1) {
             cout << "Doctor not found. The ID \"" << id << "\" is invalid.\n";
             return;
         }
@@ -213,14 +219,14 @@ public:
             return;
         }
 
-        file.seekg(offSet, ios::beg);
+        file.seekg(offset, ios::beg);
         string line;
         getline(file, line); // Read the record from the file.
 
         cout << line << endl;
 
         if (line.empty()) {
-            cout << "Error: Empty record at offset " << offSet << ".\n";
+            cout << "Error: Empty record at offset " << offset << ".\n";
             return;
         }
 
@@ -243,10 +249,33 @@ public:
         }
         name = temp;
 
-        cout << "Doctor's info:\n"
-             << "  ID: " << stoi(record_id) << '\n'
-             << "  Name: " << name << '\n'
-             << "  Address: " << address << '\n';
+        if (choice == 0) {
+            cout << "  ID: " << stoi(record_id) << " | Name: " << name << " | Address: " << address << '\n';
+        }
+        else if (choice == 1) {
+            cout << "  ID: " << stoi(record_id) << '\n';
+        }
+        else if (choice == 2) {
+            cout << "  Name: " << name << '\n';
+        }
+        else if (choice == 3) {
+            cout << "  Address: " << address << '\n';
+        }
+        else {
+            cout << "Doctor's info:\n"
+                 << "  ID: " << stoi(record_id) << '\n'
+                 << "  Name: " << name << '\n'
+                 << "  Address: " << address << '\n';
+        }
+    }
+
+    void printDoctorByName(const string &name, int choice) {
+        vector<string> ids = doctorSecondaryIndex.getPrimaryKeysBySecondaryKey(name);
+
+        for (int i = 0; i < ids.size(); ++i) {
+            printDoctorById(ids[i], choice);
+        }
+
     }
 
     static void printAllDoctors(int choice) {
@@ -269,7 +298,10 @@ public:
                 getline(recordStream, name, '|');
                 getline(recordStream, address, '|');
 
-                if (choice == 1) {
+                if (choice == 0) {
+                    cout << "ID: " << stoi(id) << " | Name: " << name << " | Address: " << address << '\n';
+                }
+                else if (choice == 1) {
                     cout << "ID: " << stoi(id) << '\n';
                 }
                 else if (choice == 2) {
@@ -278,26 +310,9 @@ public:
                 else if (choice == 3) {
                     cout << "Address: " << address << '\n';
                 }
-                else {
-                    cout << "ID: " << stoi(id) << " | Name: " << name << " | Address: " << address << '\n';
-                }
             }
         }
         file.close();
-    }
-
-    vector<string> searchByName(const string &name) {
-        // Using the doctor’s secondary index to search by name
-        vector<string> doctorIds = doctorSecondaryIndex.getPrimaryKeysBySecondaryKey(name);
-        return doctorIds;
-    }
-
-    PrimaryIndex &getDoctorPrimaryIndex() {
-        return doctorPrimaryIndex;
-    }
-
-    SecondaryIndex &getDoctorSecondaryIndex() {
-        return doctorSecondaryIndex;
     }
 
 };

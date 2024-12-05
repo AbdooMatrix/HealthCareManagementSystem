@@ -117,7 +117,7 @@ private:
 
     void handleDoctorNoCondition(const string &fields) {
         if (fields == "*" || fields == "all") {
-            doctorSystem.printAllDoctors(4);
+            doctorSystem.printAllDoctors(0);
         } else if (fields == "id") {
             doctorSystem.printAllDoctors(1);
         } else if (fields == "name") {
@@ -130,22 +130,39 @@ private:
     }
 
     void handleDoctorById(const string &fields, const string &id) {
-        PrimaryIndex doctorPrimaryIndex = doctorSystem.getDoctorPrimaryIndex();
-        int offset = doctorPrimaryIndex.binarySearchPrimaryIndex(id);
-        if (offset == -1) {
-            cout << "Doctor with ID " << stoi(id) << " not found.\n";
-            return;
+        if (fields == "*" || fields == "all") {
+            doctorSystem.printDoctorById(id, 0);  // Assuming this prints all doctor info
+        } else if (fields == "id") {
+            doctorSystem.printDoctorById(id, 1);  // Print only ID
+        } else if (fields == "name") {
+            doctorSystem.printDoctorById(id, 2);  // Print only Name
+        } else if (fields == "address") {
+            doctorSystem.printDoctorById(id, 3);  // Print only Address
+        } else {
+            cout << "Invalid field for Doctor: " << fields << ".\n";
         }
-        // Field-specific handling
     }
 
     void handleDoctorByName(const string &fields, const string &name) {
-        vector<string> doctorIds = doctorSystem.searchByName(name);
+        vector<string> doctorIds = doctorSystem.searchDoctorsByName(name);
         if (doctorIds.empty()) {
             cout << "No doctors found with name: " << name << ".\n";
             return;
         }
-        // Field-specific handling
+
+        for (const string &doctorId : doctorIds) {
+            if (fields == "*" || fields == "all") {
+                doctorSystem.printDoctorByName(doctorId, 0);
+            } else if (fields == "id") {
+                doctorSystem.printDoctorByName(doctorId, 1);
+            } else if (fields == "name") {
+                doctorSystem.printDoctorByName(doctorId, 2);
+            } else if (fields == "address") {
+                doctorSystem.printDoctorByName(doctorId, 3);
+            } else {
+                cout << "Invalid field for Doctor: " << fields << ".\n";
+            }
+        }
     }
 
     void handleAppointmentQuery(const string &fields, const string &condition) {
@@ -162,6 +179,8 @@ private:
 
         if (key == "id") {
             handleAppointmentById(fields, value);
+        } else if (key == "name") {
+            handleAppointmentByDoctorId(fields, value);
         } else {
             cout << "Invalid WHERE condition. Valid keys for Appointment are 'id'.\n";
         }
@@ -169,7 +188,13 @@ private:
 
     void handleAppointmentNoCondition(const string &fields) {
         if (fields == "*" || fields == "all") {
-            appointmentSystem.printAllAppointments();
+            appointmentSystem.printAllAppointments(0);
+        } else if (fields == "id") {
+            appointmentSystem.printAllAppointments(1);
+        } else if (fields == "date") {
+            appointmentSystem.printAllAppointments(2);
+        } else if (fields == "doctor_id") {
+            appointmentSystem.printAllAppointments(3);
         } else {
             cout << "Invalid field in SELECT query for Appointment.\n";
         }
@@ -180,6 +205,41 @@ private:
         int offset = appointmentPrimaryIndex.binarySearchPrimaryIndex(id);
         if (offset == -1) {
             cout << "Appointment with ID " << id << " not found.\n";
+            return;
+        }
+
+        if (fields == "*" || fields == "all") {
+            appointmentSystem.printAppointmentById(id, 0);
+        } else if (fields == "id") {
+            appointmentSystem.printAppointmentById(id, 1);
+        } else if (fields == "date") {
+            appointmentSystem.printAppointmentById(id, 2);
+        } else if (fields == "doctor id") {
+            appointmentSystem.printAppointmentById(id, 3);
+        } else {
+            cout << "Invalid field for Appointment: " << fields << ".\n";
+        }
+    }
+
+    void handleAppointmentByDoctorId(const string &fields, const string &doctorId) {
+        vector<string> appointmentIds = appointmentSystem.searchAppointmentsByDoctorID(doctorId); // Assuming a method to search by doctor ID
+        if (appointmentIds.empty()) {
+            cout << "No appointments found for Doctor ID: " << doctorId << ".\n";
+            return;
+        }
+
+        for (const string &appointmentId : appointmentIds) {
+            if (fields == "*" || fields == "all") {
+                appointmentSystem.printAppointmentById(appointmentId, 0);
+            } else if (fields == "id") {
+                appointmentSystem.printAppointmentById(appointmentId, 1);
+            } else if (fields == "date") {
+                appointmentSystem.printAppointmentById(appointmentId, 2);
+            } else if (fields == "doctor_id") {
+                appointmentSystem.printAppointmentById(appointmentId, 3);
+            } else {
+                cout << "Invalid field for Appointment: " << fields << ".\n";
+            }
         }
     }
 };
