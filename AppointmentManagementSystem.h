@@ -315,6 +315,14 @@ public:
         }
     }
 
+    void printAppointmentByDoctorId(const string &doctorId, int choice) {
+        vector<string> ids = appointmentSecondaryIndex.getPrimaryKeysBySecondaryKey(doctorId);
+
+        for (int i = 0; i < ids.size(); ++i) {
+            printAppointmentById(ids[i], choice);
+        }
+    }
+
     static void printAllAppointments(int choice) {
         ifstream file("appointments.txt", ios::in);
         if (!file) {

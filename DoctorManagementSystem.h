@@ -223,7 +223,7 @@ public:
         string line;
         getline(file, line); // Read the record from the file.
 
-        cout << line << endl;
+        cout << "The record from file : " << line << endl;
 
         if (line.empty()) {
             cout << "Error: Empty record at offset " << offset << ".\n";
@@ -250,16 +250,16 @@ public:
         name = temp;
 
         if (choice == 0) {
-            cout << "  ID: " << stoi(record_id) << " | Name: " << name << " | Address: " << address << '\n';
+            cout << "ID: " << stoi(record_id) << " | Name: " << name << " | Address: " << address << '\n';
         }
         else if (choice == 1) {
-            cout << "  ID: " << stoi(record_id) << '\n';
+            cout << "ID: " << stoi(record_id) << '\n';
         }
         else if (choice == 2) {
-            cout << "  Name: " << name << '\n';
+            cout << "Name: " << name << '\n';
         }
         else if (choice == 3) {
-            cout << "  Address: " << address << '\n';
+            cout << "Address: " << address << '\n';
         }
         else {
             cout << "Doctor's info:\n"
@@ -275,7 +275,6 @@ public:
         for (int i = 0; i < ids.size(); ++i) {
             printDoctorById(ids[i], choice);
         }
-
     }
 
     static void printAllDoctors(int choice) {

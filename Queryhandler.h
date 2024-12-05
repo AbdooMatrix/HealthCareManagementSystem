@@ -26,6 +26,11 @@ public:
         trim(query);
         transform(query.begin(), query.end(), query.begin(), ::tolower);
 
+        // Remove the trailing semicolon if it exists
+        if (!query.empty() && query.back() == ';') {
+            query.pop_back();
+        }
+
         if (query.substr(0, 6) != "select" || query.find("from") == string::npos) {
             cout << "Invalid query format. Please use: SELECT <fields> FROM <table> WHERE <condition>;\n";
             return;
@@ -43,6 +48,22 @@ public:
         trim(table);
         trim(condition);
 
+        // Check if the condition is 'id' and apply padding for doctors or appointments
+        if ((table == "doctors" || table == "appointments") && !condition.empty()) {
+            string key, value;
+            if (parseCondition(condition, key, value)) {
+                if (key == "id") {
+                    // Apply 2-byte padding for the ID value
+                    if (value.size() == 1) {
+                        value = "0" + value;  // Pad with leading '0' if the value is a single digit
+                    }
+                    // Update the condition with the padded value
+                    condition = key + " = '" + value + "'";
+                }
+            }
+        }
+
+        // Process the query based on table and condition
         if (table == "doctors") {
             handleDoctorQuery(fields, condition);
         } else if (table == "appointments") {
@@ -230,13 +251,13 @@ private:
 
         for (const string &appointmentId : appointmentIds) {
             if (fields == "*" || fields == "all") {
-                appointmentSystem.printAppointmentById(appointmentId, 0);
+                appointmentSystem.printAppointmentByDoctorId(appointmentId, 0);
             } else if (fields == "id") {
-                appointmentSystem.printAppointmentById(appointmentId, 1);
+                appointmentSystem.printAppointmentByDoctorId(appointmentId, 1);
             } else if (fields == "date") {
-                appointmentSystem.printAppointmentById(appointmentId, 2);
+                appointmentSystem.printAppointmentByDoctorId(appointmentId, 2);
             } else if (fields == "doctor_id") {
-                appointmentSystem.printAppointmentById(appointmentId, 3);
+                appointmentSystem.printAppointmentByDoctorId(appointmentId, 3);
             } else {
                 cout << "Invalid field for Appointment: " << fields << ".\n";
             }

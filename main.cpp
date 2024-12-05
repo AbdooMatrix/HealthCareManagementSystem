@@ -183,7 +183,7 @@ int main() {
             checkContinue();
         }
         else if (choice == 9) {
-            cout << "Query Example: SELECT ALL FROM Doctors WHERE ID = 'id';\n";
+            cout << "Query Example: SELECT * FROM Doctors WHERE ID = '1';\n";
             queryHandler.handleUserQuery();
             checkContinue();
         }
