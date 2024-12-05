@@ -301,13 +301,26 @@ public:
             getline(recordStream2, id, '|');
             getline(recordStream2, name, '|');
             getline(recordStream2, recAddress, '|');
+
             if(recAddress == address){
-                cout << "ID: " << stoi(id) << " | Name: " << name << " | Address: " << address << '\n';
+                if (choice == 0) {
+                    cout << "ID: " << stoi(id) << " | Name: " << name << " | Address: " << address << '\n';
+                } else if (choice == 1) {
+                    cout << "ID: " << stoi(id) << '\n';
+                } else if (choice == 2) {
+                    cout << "Name: " << name << '\n';
+                } else if (choice == 3) {
+                    cout << "Address: " << address << '\n';
+                } else {
+                    cout << "Doctor's info:\n"
+                         << "  ID: " << stoi(id) << '\n'
+                         << "  Name: " << name << '\n'
+                         << "  Address: " << address << '\n';
+                }
             }
         }
         doctors.close();
         primaryIndexFile.close();
-
     }
 
     void printAllDoctors(int choice) {

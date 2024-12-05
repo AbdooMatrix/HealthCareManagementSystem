@@ -235,6 +235,9 @@ private:
             handleAppointmentById(fields, value);
         } else if (key == "doctorid") {
             handleAppointmentByDoctorId(fields, value);
+        }
+        else if (key == "date") {
+            handleAppointmentByDate(fields, value);
         } else {
             cout << "Invalid WHERE condition. Valid keys for Appointment are 'id'.\n";
         }
@@ -295,6 +298,20 @@ private:
             } else {
                 cout << "Invalid field for Appointment: " << fields << ".\n";
             }
+        }
+    }
+
+    void handleAppointmentByDate(const string &fields, const string &date) {
+        if (fields == "*" || fields == "all") {
+            appointmentSystem.printAppointmentByDate(date, 0);
+        } else if (fields == "id") {
+            appointmentSystem.printAppointmentByDate(date, 1);
+        } else if (fields == "date") {
+            appointmentSystem.printAppointmentByDate(date, 2);
+        } else if (fields == "doctor_id") {
+            appointmentSystem.printAppointmentByDate(date, 3);
+        } else {
+            cout << "Invalid field for Appointment: " << fields << ".\n";
         }
     }
 };

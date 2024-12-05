@@ -25,8 +25,6 @@ public:
 };
 
 
-
-
 // The `AppointmentManagementSystem` class is responsible for managing appointments,
 // including adding, updating, deleting, and searching for appointments using primary
 // and secondary indexing techniques.
@@ -317,6 +315,63 @@ public:
         }
     }
 
+    void printAppointmentByDate(const string &dateComp, int choice) {
+        ifstream appointments("appointments.txt", ios::in);
+        ifstream primaryIndexFile("AppointmentPrimaryIndex.txt", ios::in);
+
+        if (!appointments) {
+            cerr << "Error opening appointments file.\n";
+            return;
+        }
+        if (!primaryIndexFile) {
+            cerr << "Error opening appointmentPrimaryIndex file.\n";
+            return;
+        }
+
+        string primaryIndexLine, status, len, appId, offset, date, doctorId;
+        while (getline(primaryIndexFile, primaryIndexLine)) {
+            istringstream recordStream1(primaryIndexLine);
+            getline(recordStream1, appId, '|');
+            getline(recordStream1, offset, '|');
+
+            // Seek the corresponding record in the appointments file
+            appointments.seekg(stoi(offset), ios::beg);
+
+            string appointmentLine;
+            getline(appointments, appointmentLine);
+            istringstream recordStream2(appointmentLine);
+
+            // Extract appointment details
+            getline(recordStream2, status, '|');
+            getline(recordStream2, len, '|');
+            getline(recordStream2, appId, '|');
+            getline(recordStream2, date, '|');
+            getline(recordStream2, doctorId, '|');
+
+            // Match and display records by the date
+            if (date == dateComp) {
+                if (choice == 0) {  // Print all appointment information
+                    cout << "Appointment ID: " << stoi(appId)
+                         << " | Date: " << date
+                         << " | Doctor ID: " << stoi(doctorId) << '\n';
+                } else if (choice == 1) {  // Print only Appointment ID
+                    cout << "Appointment ID: " << stoi(appId) << '\n';
+                } else if (choice == 2) {  // Print only Date
+                    cout << "Date: " << date << '\n';
+                } else if (choice == 3) {  // Print only Doctor ID
+                    cout << "Doctor ID: " << stoi(doctorId) << '\n';
+                } else {  // Default to printing all info
+                    cout << "Appointment Details:\n"
+                         << "  ID: " << stoi(appId) << '\n'
+                         << "  Date: " << date << '\n'
+                         << "  Doctor ID: " << stoi(doctorId) << '\n';
+                }
+            }
+        }
+
+        appointments.close();
+        primaryIndexFile.close();
+    }
 
     static void printAllAppointments(int choice) {
         ifstream file("appointments.txt", ios::in);
