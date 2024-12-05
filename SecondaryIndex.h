@@ -5,204 +5,180 @@
 
 using namespace std;
 
-// node has a --> vector
-class SecondaryIndexNode {
+class PrimaryKeyNode {
 public:
-    string secondaryKey;
-    vector<string> primaryKeys;
+    string primaryKey;
+    string nextIndex;  // Change from int to string
 
-    SecondaryIndexNode(const string &secondaryKey, vector<string> &vec) {
-        this->secondaryKey = secondaryKey;
-        this->primaryKeys = vec;
-    }
-
-    bool operator<(const SecondaryIndexNode &other) const {
-        return (this->secondaryKey < other.secondaryKey);
-    }
+    // Constructor
+    PrimaryKeyNode(const string& pk, const string& next) : primaryKey(pk), nextIndex(next) {}
 };
 
 class SecondaryIndex {
 private:
-    vector<SecondaryIndexNode> secondaryIndex;
+    string secondaryIndexFileName;
+    string labelIdListFileName;
+    map<string, int> secondaryIndexMap; // Maps secondary key to index of the head of linked list
+    vector<PrimaryKeyNode> primaryKeyList; // Vector storing PrimaryKeyNodes as a linked list
 
 public:
-    void loadSecondaryIndexInMemory(const string &fileName) {
-        ifstream file(fileName, ios::in);
-        if (!file.is_open()) {
-            cerr << "Error opening file: PrimaryIndex.txt\n";
-            return;
-        }
-        if (isFileEmpty(fileName)) {
+    void setSecondaryIndexAndLabelIdListFileNames(const string& secondaryIndex, const string& labelIdFileName) {
+        this->secondaryIndexFileName = secondaryIndex;
+        this->labelIdListFileName = labelIdFileName;
+        loadSecondaryIndexAndLabelIdList();
+    }
+
+    void loadSecondaryIndexAndLabelIdList() {
+        // Load DoctorSecondaryIndex
+        ifstream secFile(secondaryIndexFileName);
+        if (!secFile.is_open()) {
+            cerr << "Error opening file: " << secondaryIndexFileName << "\n";
             return;
         }
 
         string line;
-        while (getline(file, line)) {
-
+        while (getline(secFile, line)) {
             istringstream recordStream(line);
             string secondaryKey;
-            string primarykey;
+            int headIndex;
 
+            // Parse format: "<SecondaryKey>|<HeadPointer>"
             getline(recordStream, secondaryKey, '|');
+            recordStream >> headIndex;
 
-
-            vector<string> pks; // vector to store the primary keys.
-            while (getline(recordStream, primarykey, ',')) {
-                pks.emplace_back(primarykey);
-            }
-            secondaryIndex.emplace_back(secondaryKey, pks);
+            secondaryIndexMap[secondaryKey] = headIndex;
         }
+        secFile.close();
 
-        file.close();
-    }
-
-    void updateSecondaryIndexFile(const string &fileName) {
-        fstream outFile(fileName, ios::out | ios::trunc);
-        if (!outFile.is_open()) {
-            cerr << "Error opening file: PrimaryIndex.txt\n";
+        // Load DoctorLabelIdList
+        ifstream labelFile(labelIdListFileName);
+        if (!labelFile.is_open()) {
+            cerr << "Error opening file: " << labelIdListFileName << "\n";
             return;
         }
-        for (const auto &ele: secondaryIndex) {
-            outFile << ele.secondaryKey << '|';
-            for (auto &pk: ele.primaryKeys) {
-                outFile << pk;
-                if (pk != ele.primaryKeys.back()) {
-                    outFile << ',';
-                }
-            }
-            outFile << '\n';
+
+        // Clearing primaryKeyList to prepare for direct insertion
+        primaryKeyList.clear();
+
+        string recNoStr;
+        string id;
+        string nextPtrStr;
+        while (getline(labelFile, line)) {
+            istringstream recordStream(line);
+
+            // Parse format: "<recNo>|<ID>,<NextPointer>"
+            // Extract recNo (fixed width 2 bytes)
+            getline(recordStream, recNoStr, '|');
+            // Extract ID (fixed width 2 bytes)
+            getline(recordStream, id, ',');
+            // Extract next pointer as string
+            getline(recordStream, nextPtrStr);
+
+            // Add nodes sequentially without worrying about resizing
+            primaryKeyList.emplace_back(id, nextPtrStr);
         }
-        outFile.close();
+        labelFile.close();
     }
 
-    void sortSecondaryIndex() {
-        sort(secondaryIndex.begin(), secondaryIndex.end());
-        for (auto &node: secondaryIndex) {
-            sort(node.primaryKeys.begin(), node.primaryKeys.end());
+    void updateSecondaryIndexAndLabelIdList() {
+        // Update DoctorSecondaryIndex
+        ofstream secFile(secondaryIndexFileName);
+        if (!secFile.is_open()) {
+            cerr << "Error opening file: " << secondaryIndexFileName << "\n";
+            return;
         }
+        for (const auto &entry : secondaryIndexMap) {
+            secFile << entry.first << "|" << entry.second << '\n';
+        }
+        secFile.close();
+
+        // Update DoctorLabelIdList
+        ofstream labelFile(labelIdListFileName);
+        if (!labelFile.is_open()) {
+            cerr << "Error opening file: " << labelIdListFileName << "\n";
+            return;
+        }
+        int recNo = 0;
+        for (const auto &node : primaryKeyList) {
+            // Ensure fixed width formatting for recNo (2 bytes) and nextPtr (2 bytes)
+            labelFile << setw(2) << setfill('0') << recNo << "|"
+                      << setw(2) << setfill('0') << node.primaryKey << ","
+                      << node.nextIndex << '\n';  // Writing nextIndex as a string
+            recNo++;
+        }
+        labelFile.close();
     }
 
-    void addSecondaryNode(const string &secondaryKey, const string &primaryKey, const string &fileName) {
-        vector<string> vec;
-        vec.push_back(primaryKey);
-        secondaryIndex.emplace_back(secondaryKey, vec);
-        sortSecondaryIndex();
-        updateSecondaryIndexFile(fileName);
-    }
-
-    void addPrimaryKeyInSecondaryNode(const string &secondaryKey, const string &primarykey, const string &fileName) {
-        int index = binarySearchSecondaryIndex(secondaryKey);
-        if (index == -1) {
-            addSecondaryNode(secondaryKey, primarykey, fileName);
+    void addPrimaryKeyToSecondaryNode(const string &secondaryKey, const string &primaryKey) {
+        int freeLabelId = getFreeLabelIndex();  // Get a free label ID
+        if (secondaryIndexMap.find(secondaryKey) == secondaryIndexMap.end()) {
+            primaryKeyList[freeLabelId] = PrimaryKeyNode(primaryKey, "-1"); // Use free label ID for the new node
+            secondaryIndexMap[secondaryKey] = freeLabelId; // Head is the new entry
         } else {
-            secondaryIndex[index].primaryKeys.emplace_back(primarykey);
-            sortSecondaryIndex();
-            updateSecondaryIndexFile(fileName);
-        }
-    }
-
-    void removeSecondaryNode(const string &secondaryKey, const string &fileName) {
-        // Perform binary search
-        int left = 0, right = secondaryIndex.size() - 1;
-
-        while (left <= right) {
-            int mid = left + (right - left) / 2;
-
-            if (secondaryIndex[mid].secondaryKey == secondaryKey) {
-                // Found the node, remove it
-                secondaryIndex.erase(secondaryIndex.begin() + mid);
-                sortSecondaryIndex();
-                updateSecondaryIndexFile(fileName);
-                return;
-            } else if (secondaryIndex[mid].secondaryKey < secondaryKey) {
-                left = mid + 1;
-            } else {
-                right = mid - 1;
+            int currentIndex = secondaryIndexMap[secondaryKey]; // head index
+            while (primaryKeyList[currentIndex].nextIndex != "-1") {
+                currentIndex = stoi(primaryKeyList[currentIndex].nextIndex);  // Convert string back to int
             }
+            primaryKeyList[freeLabelId] = PrimaryKeyNode(primaryKey, "-1");
+            primaryKeyList[currentIndex].nextIndex = to_string(freeLabelId);  // Store index as string
         }
-
-        cerr << "Error: Secondary key not found.\n";
+        updateSecondaryIndexAndLabelIdList();
     }
 
-    void
-    removePrimaryKeyFromSecondaryNode(const string &secondaryKey, const string &primaryKey, const string &fileName) {
-        int indexNode = binarySearchSecondaryIndex(secondaryKey); // Find node
-        if (indexNode == -1) {
-            cerr << "Error: Secondary key not found in index.\n";
+    void removePrimaryKeyFromSecondaryNode(const string &secondaryKey, const string &primaryKey) {
+        if (secondaryIndexMap.find(secondaryKey) == secondaryIndexMap.end()) {
+            cerr << "Error: Secondary key not found.\n";
             return;
         }
 
-        int indexKey = binarySearchPrimaryKeys(indexNode, primaryKey); // Find key
-        if (indexKey == -1) {
-            cerr << "Error: Primary key " << primaryKey << " not found in secondary node with key " << secondaryKey
-                 << ".\n";
-            return;
+        string* prevPtr = &primaryKeyList[secondaryIndexMap[secondaryKey]].nextIndex; // address of head node's nextIndex
+        int currentIndex = secondaryIndexMap[secondaryKey]; // value of head index
+
+        while (currentIndex != -1) {
+            if (primaryKeyList[currentIndex].primaryKey == primaryKey) {
+                *prevPtr = primaryKeyList[currentIndex].nextIndex; // Update the previous node's nextIndex to current node's nextIndex
+                releaseLabelId(currentIndex);  // Release the label ID of the removed node
+                break;
+            }
+            prevPtr = &primaryKeyList[currentIndex].nextIndex; // address of current node's nextIndex
+            currentIndex = stoi(primaryKeyList[currentIndex].nextIndex); // value of current node's index
         }
 
-        // Erase the primary key
-        secondaryIndex[indexNode].primaryKeys.erase(secondaryIndex[indexNode].primaryKeys.begin() + indexKey);
-
-        // If no primary keys are left, remove the entire secondary node
-        if (secondaryIndex[indexNode].primaryKeys.empty()) {
-            removeSecondaryNode(secondaryKey, fileName);
+        if (currentIndex == -1) {
+            cerr << "Error: Primary key not found.\n";
         }
 
-        sortSecondaryIndex(); // Ensure the index is sorted
-        updateSecondaryIndexFile(fileName); // Persist changes
+        updateSecondaryIndexAndLabelIdList();
     }
 
-
-    int binarySearchSecondaryIndex(const string &secondaryKey) {
-        int left = 0;
-        int right = secondaryIndex.size() - 1;
-        while (left <= right) {
-            int mid = left + (right - left) / 2;
-            if (secondaryIndex[mid].secondaryKey == secondaryKey) {
-                return mid;
-            } else if (secondaryKey < secondaryIndex[mid].secondaryKey) {
-                right = mid - 1;
-            } else {
-                left = mid + 1;
+    vector<string> getPrimaryKeysBySecondaryKey(const string &secondaryKey) {
+        vector<string> primaryKeys;
+        if (secondaryIndexMap.find(secondaryKey) != secondaryIndexMap.end()) {
+            int index = secondaryIndexMap[secondaryKey];
+            while (index != -1) {
+                primaryKeys.push_back(primaryKeyList[index].primaryKey);
+                index = stoi(primaryKeyList[index].nextIndex);  // Convert string to int for index traversal
             }
         }
-        return -1;
+        return primaryKeys;
     }
 
-    int binarySearchPrimaryKeys(int indexNode, const string &primaryKey) {
-        const vector<string> &keys = secondaryIndex[indexNode].primaryKeys;
-        int left = 0;
-        int right = keys.size() - 1;
-
-        while (left <= right) {
-            int mid = left + (right - left) / 2;
-            if (keys[mid] == primaryKey) {
-                return mid; // Found the primary key
-            } else if (keys[mid] < primaryKey) {
-                left = mid + 1; // Search in the right half
-            } else {
-                right = mid - 1; // Search in the left half
+    int getFreeLabelIndex() {
+        for (int index = 0; index < primaryKeyList.size(); ++index) {
+            if (primaryKeyList[index].nextIndex == "##") {
+                return index;
             }
         }
-        return -1; // Not found
+        primaryKeyList.emplace_back("##", "##");
+        return primaryKeyList.size() - 1;
     }
 
-    vector<string> getPrimaryKeys(int indexNode) const {
-        if (indexNode >= 0 && indexNode < secondaryIndex.size()) {
-            return secondaryIndex[indexNode].primaryKeys;
+    void releaseLabelId(int index) {
+        if (index >= 0 && index < primaryKeyList.size()) {
+            primaryKeyList[index].primaryKey = "##";
+            primaryKeyList[index].nextIndex = "##"; // Mark as free
         }
-        return {};
     }
-
-    vector<string> getPrimaryKeysBySecondaryKey(const string& secondaryKey) {
-        int index = binarySearchSecondaryIndex(secondaryKey);  // Binary search for the secondary key
-        if (index != -1) {
-            // If found, return the associated primary keys
-            return secondaryIndex[index].primaryKeys;
-        }
-        return {};  // Return an empty vector if not found
-    }
-
 };
-
 
 #endif //HEALTHCAREMANAGEMENTSYSTEM_SECONDARYINDEX_H

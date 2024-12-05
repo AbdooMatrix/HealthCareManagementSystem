@@ -16,16 +16,22 @@ public:
 
 class AvailList {
 private:
+    string availListFileName;
     AvailListNode *header;
 
 public:
     AvailList() : header(nullptr) {}
 
+    void setAvailListFileName(const string& fileName) {
+        this->availListFileName = fileName;
+        loadAvailListInMemory();
+    }
+
     bool empty() const {
         return header == nullptr;
     }
 
-    void insert(AvailListNode *newNode, const string &fileName) {
+    void insert(AvailListNode *newNode) {
         if (header == nullptr) { // Empty list
             header = newNode;
         } else { // Insert in sorted order
@@ -46,9 +52,8 @@ public:
                 newNode->next = curr;
             }
         }
-        updateAvailListFile(fileName);
+        updateAvailListFile();
     }
-
 
     void remove(AvailListNode *nodeToRemove, const string &fileName) {
         if (header == nullptr || nodeToRemove == nullptr) {
@@ -59,7 +64,7 @@ public:
         if (header == nodeToRemove) {
             header = header->next;
             delete nodeToRemove;
-            updateAvailListFile(fileName);  // Update the file after removing the node
+            updateAvailListFile();  // Update the file after removing the node
             return;
         }
 
@@ -77,7 +82,7 @@ public:
         if (curr == nodeToRemove) {
             prev->next = curr->next;
             delete curr;
-            updateAvailListFile(fileName);  // Update the file after removing the node
+            updateAvailListFile();  // Update the file after removing the node
         }
     }
 
@@ -89,14 +94,14 @@ public:
         return curr;
     }
 
-    void loadAvailListInMemory(const string &fileName) {
-        fstream availListFile(fileName, ios::in);
+    void loadAvailListInMemory() {
+        fstream availListFile(availListFileName, ios::in);
 
         if (!availListFile.is_open()) {
             cerr << "Error opening file: doctors.txt\n";
             return;
         }
-        if (isFileEmpty(fileName)) {
+        if (isFileEmpty(availListFileName)) {
             return;
         }
 
@@ -109,16 +114,16 @@ public:
             getline(stream, size, '|');
 
             AvailListNode *newNode = new AvailListNode(stoi(offset), stoi(size));
-            insert(newNode, fileName);
+            insert(newNode);
         }
     }
 
-    void updateAvailListFile(const string &fileName) {
+    void updateAvailListFile() {
         // Open the file in output mode (overwrites the file)
-        fstream availFile(fileName, ios::out);
+        fstream availFile(availListFileName, ios::out);
 
         if (!availFile.is_open()) {
-            cerr << "Error opening file: " << fileName << endl;
+            cerr << "Error opening file: " << availListFileName << endl;
             return;
         }
 

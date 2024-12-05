@@ -26,9 +26,15 @@ public:
 };
 
 class PrimaryIndex {
+    string primaryIndexFileName;
     vector<PrimaryIndexNode> primaryIndex;
 
 public:
+    void setPrimaryIndexFileName(const string& fileName) {
+        this->primaryIndexFileName = fileName;
+        loadPrimaryIndexInMemory();
+    }
+
     string getNewId() {
         if (primaryIndex.empty()) {
             return "01";  // Start with a two-digit ID
@@ -38,13 +44,13 @@ public:
         }
     }
 
-    void loadPrimaryIndexInMemory(const string &fileName) {
-        ifstream file(fileName, ios::in);
+    void loadPrimaryIndexInMemory() {
+        ifstream file(primaryIndexFileName, ios::in);
         if (!file.is_open()) {
             cerr << "Error opening file: PrimaryIndex.txt\n";
             return;
         }
-        if (isFileEmpty(fileName)) {
+        if (isFileEmpty(primaryIndexFileName)) {
             return;
         }
 
@@ -63,8 +69,8 @@ public:
         file.close();
     }
 
-    void updatePrimaryIndexFile(const string &fileName) {
-        fstream outFile(fileName, ios::out | ios::trunc);
+    void updatePrimaryIndexFile() {
+        fstream outFile(primaryIndexFileName, ios::out | ios::trunc);
         if (!outFile.is_open()) {
             cerr << "Error opening file: PrimaryIndex.txt\n";
             return;
@@ -78,7 +84,7 @@ public:
     void addPrimaryNode(const string &primaryKey, int offset, const string &fileName) {
         primaryIndex.emplace_back(primaryKey, offset);
         sortPrimaryIndex();
-        updatePrimaryIndexFile(fileName);
+        updatePrimaryIndexFile();
     }
 
     void removePrimaryNode(const string &primaryKey, const string &fileName) {
@@ -92,7 +98,7 @@ public:
                 // Found the node, remove it
                 primaryIndex.erase(primaryIndex.begin() + mid);
                 sortPrimaryIndex();
-                updatePrimaryIndexFile(fileName);
+                updatePrimaryIndexFile();
                 return;
             } else if (primaryIndex[mid].primaryKey < primaryKey) {
                 left = mid + 1;

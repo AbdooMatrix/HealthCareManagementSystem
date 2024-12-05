@@ -17,9 +17,10 @@ private:
 
 public:
     DoctorManagementSystem() {
-        doctorPrimaryIndex.loadPrimaryIndexInMemory("DoctorPrimaryIndex.txt");
-        doctorSecondaryIndex.loadSecondaryIndexInMemory("DoctorSecondaryIndex.txt");
-        doctorAvailList.loadAvailListInMemory("DoctorAvailList.txt");
+        doctorPrimaryIndex.setPrimaryIndexFileName("DoctorPrimaryIndex.txt");
+        doctorSecondaryIndex.setSecondaryIndexAndLabelIdListFileNames("DoctorSecondaryIndex.txt",
+                                                                      "DoctorLabelIdList.txt");
+        doctorAvailList.setAvailListFileName("DoctorAvailList.txt");
     }
 
     void addDoctor(Doctor &doctor) {
@@ -77,7 +78,7 @@ public:
         file.close();
 
         doctorPrimaryIndex.addPrimaryNode(doctor.id, offset, "DoctorPrimaryIndex.txt");
-        doctorSecondaryIndex.addPrimaryKeyInSecondaryNode(doctor.name, doctor.id, "DoctorSecondaryIndex.txt");
+        doctorSecondaryIndex.addPrimaryKeyToSecondaryNode(doctor.name, doctor.id);
     }
 
 
@@ -114,8 +115,8 @@ public:
 
 
         if (newSize <= oldSize) {
-            doctorSecondaryIndex.removePrimaryKeyFromSecondaryNode(name, id, "DoctorSecondaryIndex.txt");
-            doctorSecondaryIndex.addPrimaryKeyInSecondaryNode(newName, id, "DoctorSecondaryIndex.txt");
+            doctorSecondaryIndex.removePrimaryKeyFromSecondaryNode(name, id);
+            doctorSecondaryIndex.addPrimaryKeyToSecondaryNode(newName, id);
             size_t nameOffset = offset + status.size() + recordLen.size() + record_id.size() + 3; // Adjust dynamically
             doctorFile.seekp(nameOffset, ios::beg);
             newName.resize(oldSize, '-'); // Ensure consistent size
@@ -175,11 +176,11 @@ public:
 
         // Add node to DoctorAvailList
         AvailListNode *newNode = new AvailListNode(offset, lengthIndicator);
-        doctorAvailList.insert(newNode, "DoctorAvailList.txt");
+        doctorAvailList.insert(newNode);
 
         // Remove the doctor from the primary index and update the file
         doctorPrimaryIndex.removePrimaryNode(id, "DoctorPrimaryIndex.txt");
-        doctorSecondaryIndex.removePrimaryKeyFromSecondaryNode(name, id, "DoctorSecondaryIndex.txt");
+        doctorSecondaryIndex.removePrimaryKeyFromSecondaryNode(name, id);
     }
 
     void printDoctorInfo(const string &id) {
@@ -231,7 +232,7 @@ public:
              << "  Address: " << address << '\n';
     }
 
-        vector<string> searchByName(const string& name) {
+    vector<string> searchByName(const string &name) {
         // Using the doctor’s secondary index to search by name
         vector<string> doctorIds = doctorSecondaryIndex.getPrimaryKeysBySecondaryKey(name);
         return doctorIds;
@@ -266,7 +267,7 @@ public:
     }
 
     void printAllDoctors() {
-        ifstream file("doctors.txt",ios::in );
+        ifstream file("doctors.txt", ios::in);
         if (!file) {
             cerr << "Error opening doctor file.\n";
             return;
@@ -339,33 +340,33 @@ public:
         file.close();
     }
 
-    void printDoctorId(const string& doctorId) {
-    ifstream file("doctors.txt");
-    if (!file.is_open()) {
-        cout << "Error: Unable to open the doctors file.\n";
-        return;
-    }
-
-    string line;
-    while (getline(file, line)) {
-        // Parse the line to extract the ID
-        size_t idStart = line.find('|', line.find('|') + 1) + 1;
-        size_t idEnd = line.find('|', idStart);
-
-        string id = line.substr(idStart, idEnd - idStart);
-
-        if (id == doctorId) {
-            cout << id << endl;  // Print the Doctor ID
-            file.close();
+    void printDoctorId(const string &doctorId) {
+        ifstream file("doctors.txt");
+        if (!file.is_open()) {
+            cout << "Error: Unable to open the doctors file.\n";
             return;
         }
+
+        string line;
+        while (getline(file, line)) {
+            // Parse the line to extract the ID
+            size_t idStart = line.find('|', line.find('|') + 1) + 1;
+            size_t idEnd = line.find('|', idStart);
+
+            string id = line.substr(idStart, idEnd - idStart);
+
+            if (id == doctorId) {
+                cout << id << endl;  // Print the Doctor ID
+                file.close();
+                return;
+            }
+        }
+
+        cout << "Doctor with ID " << doctorId << " not found.\n";
+        file.close();
     }
 
-    cout << "Doctor with ID " << doctorId << " not found.\n";
-    file.close();
-}
-
-void printDoctorName(const string& doctorId) {
+    void printDoctorName(const string &doctorId) {
         ifstream file("doctors.txt");
         if (!file.is_open()) {
             cout << "Error: Unable to open the doctors file.\n";
@@ -394,47 +395,46 @@ void printDoctorName(const string& doctorId) {
 
         cout << "Doctor with ID " << doctorId << " not found.\n";
         file.close();
-}
-
-void printDoctorAddress(const string& doctorId) {
-    ifstream file("doctors.txt");
-    if (!file.is_open()) {
-        cout << "Error: Unable to open the doctors file.\n";
-        return;
     }
 
-    string line;
-    while (getline(file, line)) {
-        // Parse the line to extract the ID
-        size_t idStart = line.find('|', line.find('|') + 1) + 1;
-        size_t idEnd = line.find('|', idStart);
-
-        string id = line.substr(idStart, idEnd - idStart);
-
-        if (id == doctorId) {
-            // Extract the Address
-            size_t addressStart = line.find('|', line.find('|', line.find('|', line.find('|') + 1) + 1) + 1) + 1;
-            size_t addressEnd = line.find('|', addressStart);
-
-            string address = line.substr(addressStart, addressEnd - addressStart);
-            cout << address << endl;  // Print the Doctor Address
-            file.close();
+    void printDoctorAddress(const string &doctorId) {
+        ifstream file("doctors.txt");
+        if (!file.is_open()) {
+            cout << "Error: Unable to open the doctors file.\n";
             return;
         }
+
+        string line;
+        while (getline(file, line)) {
+            // Parse the line to extract the ID
+            size_t idStart = line.find('|', line.find('|') + 1) + 1;
+            size_t idEnd = line.find('|', idStart);
+
+            string id = line.substr(idStart, idEnd - idStart);
+
+            if (id == doctorId) {
+                // Extract the Address
+                size_t addressStart = line.find('|', line.find('|', line.find('|', line.find('|') + 1) + 1) + 1) + 1;
+                size_t addressEnd = line.find('|', addressStart);
+
+                string address = line.substr(addressStart, addressEnd - addressStart);
+                cout << address << endl;  // Print the Doctor Address
+                file.close();
+                return;
+            }
+        }
+
+        cout << "Doctor with ID " << doctorId << " not found.\n";
+        file.close();
     }
 
-    cout << "Doctor with ID " << doctorId << " not found.\n";
-    file.close();
-}
-
-PrimaryIndex& getDoctorPrimaryIndex() {
+    PrimaryIndex &getDoctorPrimaryIndex() {
         return doctorPrimaryIndex;
     }
 
-    SecondaryIndex& getDoctorSecondaryIndex() {
+    SecondaryIndex &getDoctorSecondaryIndex() {
         return doctorSecondaryIndex;
     }
-
 
 };
 
