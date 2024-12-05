@@ -74,7 +74,7 @@ public:
 
             file.write(newRecord.c_str(), node->size);
             offset = node->offset;
-            appointmentAvailList.remove(node, "AppointmentAvailList.txt");
+            appointmentAvailList.remove(node);
 
         } else {
             newRecord += " |";
@@ -89,10 +89,10 @@ public:
             file.write(newRecord.c_str(), newRecord.size());
         }
 
-        cout << "Appointment with ID " << appointment.id << " is added." << endl;
+        cout << "Appointment with ID " << stoi(appointment.id) << " is added." << endl;
 
         file.close();
-        appointmentPrimaryIndex.addPrimaryNode(appointment.id, offset, "AppointmentPrimaryIndex.txt");
+        appointmentPrimaryIndex.addPrimaryNode(appointment.id, offset);
         appointmentSecondaryIndex.addPrimaryKeyToSecondaryNode(appointment.doctorID, appointment.id);
 
     }
@@ -187,7 +187,7 @@ public:
 
         int lengthIndicator = stoi(recordLen); // Convert the string to an integer
 
-        cout << "Appointment with ID " << id << " has been marked as deleted.\n";
+        cout << "Appointment with ID " << stoi(id) << " has been marked as deleted.\n";
 
         appointmentFile.close();
 
@@ -195,7 +195,7 @@ public:
         appointmentAvailList.insert(newNode);
 
         // Remove the appointment from the primary index and update the file
-        appointmentPrimaryIndex.removePrimaryNode(id, "AppointmentPrimaryIndex.txt");
+        appointmentPrimaryIndex.removePrimaryNode(id);
         appointmentSecondaryIndex.removePrimaryKeyFromSecondaryNode(doctorID, id);
 
     }
@@ -237,7 +237,7 @@ public:
 
         cout << "Appointment ID: " << appointmentID << endl;
         cout << "Appointment Date: " << date << endl;
-        cout << "Doctor ID: " << doctorID << endl;
+        cout << "Doctor ID: " << stoi(doctorID) << endl;
 
         file.close();
     }
@@ -264,7 +264,7 @@ public:
     void printAppointment(const string &id) {
         int offSet = appointmentPrimaryIndex.binarySearchPrimaryIndex(id);
         if (offSet == -1) {
-            cout << "appointment not found. The ID \"" << id << "\" is invalid.\n";
+            cout << "Appointment not found. The ID \"" << stoi(id) << "\" is invalid.\n";
             return;
         }
 

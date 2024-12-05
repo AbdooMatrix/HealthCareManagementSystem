@@ -55,7 +55,7 @@ public:
         updateAvailListFile();
     }
 
-    void remove(AvailListNode *nodeToRemove, const string &fileName) {
+    void remove(AvailListNode *nodeToRemove) {
         if (header == nullptr || nodeToRemove == nullptr) {
             return; // List is empty or invalid node
         }

@@ -59,7 +59,7 @@ public:
             file.write(newRecord.c_str(), node->size);
             offset = node->offset;
 
-            doctorAvailList.remove(node, "DoctorAvailList.txt");
+            doctorAvailList.remove(node);
         } else { // No suitable node found, append to the end of the file
             newRecord += " |";
             if (lengthIndicator < 10) {
@@ -73,14 +73,13 @@ public:
             file.write(newRecord.c_str(), newRecord.size());
         }
 
-        cout << "Doctor " << doctor.name << " is added with ID " << doctor.id << endl;
+        cout << "Doctor " << doctor.name << " is added with ID " << stoi(doctor.id) << endl;
 
         file.close();
 
-        doctorPrimaryIndex.addPrimaryNode(doctor.id, offset, "DoctorPrimaryIndex.txt");
+        doctorPrimaryIndex.addPrimaryNode(doctor.id, offset);
         doctorSecondaryIndex.addPrimaryKeyToSecondaryNode(doctor.name, doctor.id);
     }
-
 
     void updateDoctorName(const string &id, string &newName) {
         int offset = doctorPrimaryIndex.binarySearchPrimaryIndex(id);
@@ -170,7 +169,7 @@ public:
 
         int lengthIndicator = stoi(recordLen); // Convert the string to an integer
 
-        cout << "Doctor with ID " << id << " has been marked as deleted.\n";
+        cout << "Doctor with ID " << stoi(id) << " has been marked as deleted.\n";
 
         doctorFile.close();
 
@@ -179,7 +178,7 @@ public:
         doctorAvailList.insert(newNode);
 
         // Remove the doctor from the primary index and update the file
-        doctorPrimaryIndex.removePrimaryNode(id, "DoctorPrimaryIndex.txt");
+        doctorPrimaryIndex.removePrimaryNode(id);
         doctorSecondaryIndex.removePrimaryKeyFromSecondaryNode(name, id);
     }
 

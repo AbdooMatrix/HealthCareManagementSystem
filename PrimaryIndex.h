@@ -81,13 +81,13 @@ public:
         outFile.close();
     }
 
-    void addPrimaryNode(const string &primaryKey, int offset, const string &fileName) {
+    void addPrimaryNode(const string &primaryKey, int offset) {
         primaryIndex.emplace_back(primaryKey, offset);
         sortPrimaryIndex();
         updatePrimaryIndexFile();
     }
 
-    void removePrimaryNode(const string &primaryKey, const string &fileName) {
+    void removePrimaryNode(const string &primaryKey) {
         // Perform binary search
         int left = 0, right = primaryIndex.size() - 1;
 
