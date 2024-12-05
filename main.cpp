@@ -15,6 +15,15 @@ void checkContinue() {
     }
 }
 
+string padInt(int x) {
+    // Pad the ID with leading zeros to make it 2 characters long
+    string paddedInt = to_string(x);
+    if (paddedInt.length() < 2) {
+        paddedInt.insert(0, 1, '0');
+    }
+    return paddedInt;
+}
+
 int main() {
 
     cout << "Welcome to Your Health Care Management System\n";
@@ -72,17 +81,22 @@ int main() {
             checkContinue();
         } else if (choice == 3) {
             // Code for updating doctor name
-            string id;
+            int id;
             cout << "Please enter the Doctor's ID you want to change his name: ";
             cin >> id;
+
+            // Pad the ID with leading zeros to make it 2 characters long
+            string paddedId = padInt(id);
 
             string newName;
             cout << "Please enter Doctor's new name: ";
             cin.ignore(); // Clear input buffer
             getline(cin, newName);
+
+            // Assume trim is a utility function you defined elsewhere
             trim(newName);
 
-            doctorSystem.updateDoctorName(id, newName);
+            doctorSystem.updateDoctorName(paddedId, newName);
             checkContinue();
         } else if (choice == 4) {
             string id;
@@ -98,28 +112,43 @@ int main() {
             appointmentSystem.updateAppointmentDate(id, newDate);
             checkContinue();
         } else if (choice == 5) {
-            string id;
+            int id;
             cout << "Please enter the Appointment's ID you want to delete: ";
             cin >> id;
-            appointmentSystem.deleteAppointment(id);
+
+            // Pad the ID with leading zeros to make it 2 characters long
+            string paddedId = padInt(id);
+
+            appointmentSystem.deleteAppointment(paddedId);
             checkContinue();
         } else if (choice == 6) {
-            string id;
+            int id;
             cout << "Please enter the Doctor's ID you want to delete: ";
             cin >> id;
-            doctorSystem.deleteDoctor(id);
+
+            // Pad the ID with leading zeros to make it 2 characters long
+            string paddedId = padInt(id);
+
+            doctorSystem.deleteDoctor(paddedId);
             checkContinue();
         } else if (choice == 7) {
-            string id;
+            int id;
             cout << "Please enter the Doctor's ID you want to search on: ";
             cin >> id;
-            doctorSystem.printDoctorInfo(id);
+
+            // Pad the ID with leading zeros to make it 2 characters long
+            string paddedId = padInt(id);
+
+            doctorSystem.printDoctorInfo(paddedId);
             checkContinue();
         } else if (choice == 8) {
-            string id;
+            int id;
             cout << "Please enter the Appointment's ID you want to search on: ";
             cin >> id;
-            appointmentSystem.printAppointmentInfo(id);
+
+            string paddedId = padInt(id);
+
+            appointmentSystem.printAppointmentInfo(paddedId);
             checkContinue();
         } else if (choice == 9) {
             handleUserQuery(doctorSystem,appointmentSystem);

@@ -227,7 +227,7 @@ public:
         name = temp;
 
         cout << "Doctor's info:\n"
-             << "  ID: " << record_id << '\n'
+             << "  ID: " << stoi(record_id) << '\n'
              << "  Name: " << name << '\n'
              << "  Address: " << address << '\n';
     }
