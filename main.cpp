@@ -52,6 +52,7 @@ int main() {
 
     DoctorManagementSystem doctorSystem;
     AppointmentManagementSystem appointmentSystem;
+    QueryHandler queryHandler(doctorSystem, appointmentSystem);
 
     while (choice != 0) {
         cout <<
@@ -84,7 +85,9 @@ int main() {
 
             doctorSystem.addDoctor(doctor);
             checkContinue();
-        } else if (choice == 2) {
+
+        }
+        else if (choice == 2) {
             Appointment appointment;
             string date, doctorID;
             cout << "Enter the date: ";
@@ -100,7 +103,8 @@ int main() {
 
             appointmentSystem.addAppointment(appointment);
             checkContinue();
-        } else if (choice == 3) {
+        }
+        else if (choice == 3) {
             // Code for updating doctor name
             int id;
             cout << "Please enter the Doctor's ID you want to change his name: ";
@@ -119,7 +123,8 @@ int main() {
 
             doctorSystem.updateDoctorName(paddedId, newName);
             checkContinue();
-        } else if (choice == 4) {
+        }
+        else if (choice == 4) {
             string id;
             cout << "Please enter the Appointment's ID you want to change his date: ";
             cin >> id;
@@ -132,7 +137,8 @@ int main() {
 
             appointmentSystem.updateAppointmentDate(id, newDate);
             checkContinue();
-        } else if (choice == 5) {
+        }
+        else if (choice == 5) {
             int id;
             cout << "Please enter the Appointment's ID you want to delete: ";
             cin >> id;
@@ -142,7 +148,8 @@ int main() {
 
             appointmentSystem.deleteAppointment(paddedId);
             checkContinue();
-        } else if (choice == 6) {
+        }
+        else if (choice == 6) {
             int id;
             cout << "Please enter the Doctor's ID you want to delete: ";
             cin >> id;
@@ -152,7 +159,8 @@ int main() {
 
             doctorSystem.deleteDoctor(paddedId);
             checkContinue();
-        } else if (choice == 7) {
+        }
+        else if (choice == 7) {
             int id;
             cout << "Please enter the Doctor's ID you want to search on: ";
             cin >> id;
@@ -162,7 +170,8 @@ int main() {
 
             doctorSystem.printDoctorInfo(paddedId);
             checkContinue();
-        } else if (choice == 8) {
+        }
+        else if (choice == 8) {
             int id;
             cout << "Please enter the Appointment's ID you want to search on: ";
             cin >> id;
@@ -171,11 +180,16 @@ int main() {
 
             appointmentSystem.printAppointmentInfo(paddedId);
             checkContinue();
-        } else if (choice == 9) {
+        }
+        else if (choice == 9) {
 
-        } else if (choice == 0) {
+            queryHandler.handleUserQuery();
+            checkContinue();
+        }
+        else if (choice == 0) {
             // Exit condition
-        } else {
+        }
+        else {
             cout << "Enter a valid choice\n";
         }
     }
