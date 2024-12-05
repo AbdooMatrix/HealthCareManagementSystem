@@ -65,6 +65,7 @@ int main() {
              "7) Print Doctor Info (Doctor ID)\n"
              "8) Print Appointment Info (Appointment ID)\n"
              "9) Write Query\n"
+             "10) Print all doctors\n"
              "0) Exit\n"
              "Enter a choice: ";
         cin >> choice;
@@ -182,12 +183,13 @@ int main() {
             checkContinue();
         }
         else if (choice == 9) {
-
+            cout << "Query Example: SELECT ALL FROM Doctors WHERE ID = 'id';\n";
             queryHandler.handleUserQuery();
             checkContinue();
         }
-        else if (choice == 0) {
-            // Exit condition
+        else if (choice == 10) {
+            doctorSystem.doctorPrinter(4);
+            checkContinue();
         }
         else {
             cout << "Enter a valid choice\n";

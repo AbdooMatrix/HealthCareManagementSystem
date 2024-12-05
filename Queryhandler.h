@@ -14,7 +14,7 @@ using namespace std;
 
 class QueryHandler {
 public:
-    QueryHandler(DoctorManagementSystem& doctorSys, AppointmentManagementSystem& appointmentSys)
+    QueryHandler(DoctorManagementSystem &doctorSys, AppointmentManagementSystem &appointmentSys)
             : doctorSystem(doctorSys), appointmentSystem(appointmentSys) {}
 
     void handleUserQuery() {
@@ -53,8 +53,8 @@ public:
     }
 
 private:
-    DoctorManagementSystem& doctorSystem;
-    AppointmentManagementSystem& appointmentSystem;
+    DoctorManagementSystem &doctorSystem;
+    AppointmentManagementSystem &appointmentSystem;
 
     void trim(string &str) {
         if (str.empty()) {
@@ -74,12 +74,12 @@ private:
         }
 
         // Update the string only if trimming is required
-        if (i != 0 || (j != str.size() - 1) ) {
+        if (i != 0 || (j != str.size() - 1)) {
             str = str.substr(i, j - i + 1);
         }
     }
 
-    bool parseCondition(const string& condition, string& key, string& value) {
+    bool parseCondition(const string &condition, string &key, string &value) {
         size_t eqPos = condition.find('=');
         if (eqPos == string::npos) return false;
 
@@ -94,7 +94,7 @@ private:
         return true;
     }
 
-    void handleDoctorQuery(const string& fields, const string& condition) {
+    void handleDoctorQuery(const string &fields, const string &condition) {
         if (condition.empty()) {
             handleDoctorNoCondition(fields);
             return;
@@ -115,29 +115,31 @@ private:
         }
     }
 
-    void handleDoctorNoCondition(const string& fields) {
+    void handleDoctorNoCondition(const string &fields) {
         if (fields == "*" || fields == "all") {
-            doctorSystem.printAllDoctors();
-        } else if (fields == "name") {
-            doctorSystem.printDoctorAllNames();
+            doctorSystem.doctorPrinter(4);
         } else if (fields == "id") {
-            doctorSystem.printDoctorAllIds();
+            doctorSystem.doctorPrinter(1);
+        } else if (fields == "name") {
+            doctorSystem.doctorPrinter(2);
+        } else if (fields == "address") {
+            doctorSystem.doctorPrinter(3);
         } else {
             cout << "Invalid field in SELECT query for Doctor.\n";
         }
     }
 
-    void handleDoctorById(const string& fields, const string& id) {
+    void handleDoctorById(const string &fields, const string &id) {
         PrimaryIndex doctorPrimaryIndex = doctorSystem.getDoctorPrimaryIndex();
         int offset = doctorPrimaryIndex.binarySearchPrimaryIndex(id);
         if (offset == -1) {
-            cout << "Doctor with ID " << id << " not found.\n";
+            cout << "Doctor with ID " << stoi(id) << " not found.\n";
             return;
         }
         // Field-specific handling
     }
 
-    void handleDoctorByName(const string& fields, const string& name) {
+    void handleDoctorByName(const string &fields, const string &name) {
         vector<string> doctorIds = doctorSystem.searchByName(name);
         if (doctorIds.empty()) {
             cout << "No doctors found with name: " << name << ".\n";
@@ -146,7 +148,7 @@ private:
         // Field-specific handling
     }
 
-    void handleAppointmentQuery(const string& fields, const string& condition) {
+    void handleAppointmentQuery(const string &fields, const string &condition) {
         if (condition.empty()) {
             handleAppointmentNoCondition(fields);
             return;
@@ -165,7 +167,7 @@ private:
         }
     }
 
-    void handleAppointmentNoCondition(const string& fields) {
+    void handleAppointmentNoCondition(const string &fields) {
         if (fields == "*" || fields == "all") {
             appointmentSystem.printAllAppointments();
         } else {
@@ -173,7 +175,7 @@ private:
         }
     }
 
-    void handleAppointmentById(const string& fields, const string& id) {
+    void handleAppointmentById(const string &fields, const string &id) {
         PrimaryIndex appointmentPrimaryIndex = appointmentSystem.getAppointmentPrimaryIndex();
         int offset = appointmentPrimaryIndex.binarySearchPrimaryIndex(id);
         if (offset == -1) {
