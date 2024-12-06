@@ -316,61 +316,57 @@ public:
     }
 
     void printAppointmentByDate(const string &dateComp, int choice) {
+        const vector<PrimaryIndexNode>& primaryIndexNodes = appointmentPrimaryIndex.getPrimaryIndexNodes();
         ifstream appointments("appointments.txt", ios::in);
-        ifstream primaryIndexFile("AppointmentPrimaryIndex.txt", ios::in);
-
         if (!appointments) {
             cerr << "Error opening appointments file.\n";
             return;
         }
-        if (!primaryIndexFile) {
-            cerr << "Error opening appointmentPrimaryIndex file.\n";
-            return;
-        }
 
-        string primaryIndexLine, status, len, appId, offset, date, doctorId;
-        while (getline(primaryIndexFile, primaryIndexLine)) {
-            istringstream recordStream1(primaryIndexLine);
-            getline(recordStream1, appId, '|');
-            getline(recordStream1, offset, '|');
-
+        // Loop through the primaryIndex vector in memory
+        for (const auto &node : primaryIndexNodes) {
             // Seek the corresponding record in the appointments file
-            appointments.seekg(stoi(offset), ios::beg);
+            appointments.seekg(node.offset, ios::beg);
 
             string appointmentLine;
             getline(appointments, appointmentLine);
-            istringstream recordStream2(appointmentLine);
+            istringstream recordStream(appointmentLine);
 
             // Extract appointment details
-            getline(recordStream2, status, '|');
-            getline(recordStream2, len, '|');
-            getline(recordStream2, appId, '|');
-            getline(recordStream2, date, '|');
-            getline(recordStream2, doctorId, '|');
+            string status, len, appId, date, doctorId;
+            getline(recordStream, status, '|');
+            getline(recordStream, len, '|');
+            getline(recordStream, appId, '|');
+            getline(recordStream, date, '|');
+            getline(recordStream, doctorId, '|');
 
             // Match and display records by the date
             if (date == dateComp) {
-                if (choice == 0) {  // Print all appointment information
-                    cout << "Appointment ID: " << stoi(appId)
-                         << " | Date: " << date
-                         << " | Doctor ID: " << stoi(doctorId) << '\n';
-                } else if (choice == 1) {  // Print only Appointment ID
-                    cout << "Appointment ID: " << stoi(appId) << '\n';
-                } else if (choice == 2) {  // Print only Date
-                    cout << "Date: " << date << '\n';
-                } else if (choice == 3) {  // Print only Doctor ID
-                    cout << "Doctor ID: " << stoi(doctorId) << '\n';
-                } else {  // Default to printing all info
-                    cout << "Appointment Details:\n"
-                         << "  ID: " << stoi(appId) << '\n'
-                         << "  Date: " << date << '\n'
-                         << "  Doctor ID: " << stoi(doctorId) << '\n';
+                switch (choice) {
+                    case 0:  // Print all appointment information
+                        cout << "Appointment ID: " << stoi(appId)
+                             << " | Date: " << date
+                             << " | Doctor ID: " << stoi(doctorId) << '\n';
+                        break;
+                    case 1:  // Print only Appointment ID
+                        cout << "Appointment ID: " << stoi(appId) << '\n';
+                        break;
+                    case 2:  // Print only Date
+                        cout << "Date: " << date << '\n';
+                        break;
+                    case 3:  // Print only Doctor ID
+                        cout << "Doctor ID: " << stoi(doctorId) << '\n';
+                        break;
+                    default:  // Default to printing all info
+                        cout << "Appointment Details:\n"
+                             << "  ID: " << stoi(appId) << '\n'
+                             << "  Date: " << date << '\n'
+                             << "  Doctor ID: " << stoi(doctorId) << '\n';
                 }
             }
         }
 
         appointments.close();
-        primaryIndexFile.close();
     }
 
     static void printAllAppointments(int choice) {

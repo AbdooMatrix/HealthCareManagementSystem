@@ -272,37 +272,34 @@ public:
     }
 
     void printDoctorByAddress(const string &address, int choice) {
-        ifstream doctors("doctors.txt", ios::in);
-        ifstream primaryIndexFile("DoctorPrimaryIndex.txt", ios::in);
-        if (!doctors) {
-            cerr << "Error opening doctorPrimaryIndex file.\n";
-            return;
-        }
-        if (!primaryIndexFile) {
+        const vector<PrimaryIndexNode>& primaryIndexNodes = doctorPrimaryIndex.getPrimaryIndexNodes();
+        ifstream doctorsFile("doctors.txt", ios::in);
+        if (!doctorsFile.is_open()) {
             cerr << "Error opening doctor file.\n";
             return;
         }
 
-        string primaryIndexLine, status, len, id, offset, name, recAddress;
-        while (getline(primaryIndexFile, primaryIndexLine)) {
-            istringstream recordStream1(primaryIndexLine);
-            getline(recordStream1, id, '|');
-            getline(recordStream1, offset, '|');
+        for (const PrimaryIndexNode& node : primaryIndexNodes) {
+            int offset = node.offset;
 
-            doctors.seekg(stoi(offset), ios::beg);
+            doctorsFile.seekg(offset, ios::beg);
+            string line;
+            getline(doctorsFile, line);
 
+            if (line.empty() || line[0] == '*') { // Skip deleted records
+                continue;
+            }
 
-            string doctorLine ;
-            getline(doctors, doctorLine);
-            istringstream recordStream2(doctorLine);
+            istringstream recordStream(line);
+            string status, len, id, name, recAddress;
 
-            getline(recordStream2, status, '|');
-            getline(recordStream2, len, '|');
-            getline(recordStream2, id, '|');
-            getline(recordStream2, name, '|');
-            getline(recordStream2, recAddress, '|');
+            getline(recordStream, status, '|');
+            getline(recordStream, len, '|');
+            getline(recordStream, id, '|');
+            getline(recordStream, name, '|');
+            getline(recordStream, recAddress, '|');
 
-            if(recAddress == address){
+            if (recAddress == address) {
                 if (choice == 0) {
                     cout << "ID: " << stoi(id) << " | Name: " << name << " | Address: " << address << '\n';
                 } else if (choice == 1) {
@@ -319,8 +316,8 @@ public:
                 }
             }
         }
-        doctors.close();
-        primaryIndexFile.close();
+
+        doctorsFile.close();
     }
 
     void printAllDoctors(int choice) {

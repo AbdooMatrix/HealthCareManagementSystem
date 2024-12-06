@@ -44,6 +44,10 @@ public:
         }
     }
 
+    vector<PrimaryIndexNode> getPrimaryIndexNodes() const {
+        return primaryIndex;
+    }
+
     void loadPrimaryIndexInMemory() {
         ifstream file(primaryIndexFileName, ios::in);
         if (!file.is_open()) {
