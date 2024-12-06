@@ -2,49 +2,57 @@
 #define HEALTHCAREMANAGEMENTSYSTEM_AVAILLIST_H
 
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <cctype>
+#include <algorithm>
 
 using namespace std;
 
-bool isNumber(const string &str) {
-    return !str.empty() && all_of(str.begin(), str.end(), ::isdigit);
-}
-
+// Class representing a node in the available memory list
 class AvailListNode {
 public:
-    int offset;
-    int size;
-    AvailListNode *next;
+    int offset;  // Offset of the available block
+    int size;    // Size of the available block
+    AvailListNode *next;  // Pointer to the next node in the list
 
+    // Constructor to initialize the node with offset, size, and next as nullptr
     AvailListNode(int offset, int size) : offset(offset), size(size), next(nullptr) {}
 };
 
+// Class representing the list of available memory blocks
 class AvailList {
 private:
-    string availListFileName;
-    AvailListNode *header;
+    string availListFileName;  // Filename of the available memory list file
+    AvailListNode *header;     // Head node of the linked list
 
 public:
+    // Constructor initializes an empty list (header is nullptr)
     AvailList() : header(nullptr) {}
 
+    // Set the filename for the available list and load the data into memory
     void setAvailListFileName(const string& fileName) {
         this->availListFileName = fileName;
         loadAvailListInMemory();
     }
 
+    // Insert a new node in the available list in sorted order by size
     void insert(AvailListNode *newNode) {
-        if (header == nullptr) { // Empty list
+        if (header == nullptr) { // If the list is empty, set the new node as the head
             header = newNode;
         } else { // Insert in sorted order
             AvailListNode *prev = nullptr;
             AvailListNode *curr = header;
 
-            // Traverse to find the correct position
+            // Traverse to find the correct position to insert the new node
             while (curr != nullptr && curr->size < newNode->size) {
                 prev = curr;
                 curr = curr->next;
             }
 
-            if (prev == nullptr) { // Insert at the beginning
+            // If inserting at the beginning
+            if (prev == nullptr) {
                 newNode->next = header;
                 header = newNode;
             } else { // Insert in the middle or end
@@ -52,9 +60,10 @@ public:
                 newNode->next = curr;
             }
         }
-        updateAvailListFile();
+        updateAvailListFile();  // Update the file after insertion
     }
 
+    // Remove a node from the available list
     void remove(AvailListNode *nodeToRemove) {
         if (header == nullptr || nodeToRemove == nullptr) {
             return; // List is empty or invalid node
@@ -64,7 +73,7 @@ public:
         if (header == nodeToRemove) {
             header = header->next;
             delete nodeToRemove;
-            updateAvailListFile();  // Update the file after removing the node
+            updateAvailListFile();  // Update the file after removal
             return;
         }
 
@@ -82,18 +91,20 @@ public:
         if (curr == nodeToRemove) {
             prev->next = curr->next;
             delete curr;
-            updateAvailListFile();  // Update the file after removing the node
+            updateAvailListFile();  // Update the file after removal
         }
     }
 
-    AvailListNode *bestFit(int newSize) { // offset - size
+    // Find the best fit node for a given size (a node with a size >= newSize)
+    AvailListNode *bestFit(int newSize) {
         AvailListNode *curr = header;
         while (curr != nullptr && curr->size < newSize) {
-            curr = curr->next;
+            curr = curr->next;  // Move to the next node if current size is smaller
         }
-        return curr;
+        return curr;  // Return the first node that fits
     }
 
+    // Load the available list data from the file into memory
     void loadAvailListInMemory() {
         fstream availListFile(availListFileName, ios::in);
 
@@ -102,7 +113,7 @@ public:
             return;
         }
         if (isFileEmpty(availListFileName)) {
-            return;
+            return; // Return early if the file is empty
         }
 
         string line;
@@ -112,21 +123,12 @@ public:
             getline(stream, offset, '|');
             getline(stream, size, '|');
 
-            try {
-                if (!offset.empty() && !size.empty() && isNumber(offset) && isNumber(size)) {
-                    AvailListNode *newNode = new AvailListNode(stoi(offset), stoi(size));
-                    insert(newNode);
-                } else {
-                    cerr << "Malformed line: " << line << endl;
-                }
-            } catch (const invalid_argument &e) {
-                cerr << "Invalid number format in line: " << line << endl;
-            } catch (const out_of_range &e) {
-                cerr << "Number out of range in line: " << line << endl;
-            }
+            AvailListNode *newNode = new AvailListNode(stoi(offset), stoi(size));
+            insert(newNode);  // Insert the node into the list
         }
     }
 
+    // Update the available list file with the current in-memory data
     void updateAvailListFile() {
         // Open the file in output mode (overwrites the file)
         fstream availFile(availListFileName, ios::out);
@@ -140,21 +142,20 @@ public:
 
         // Traverse through the list and write each node's data to the file
         while (curr != nullptr) {
-            // Assuming status '*' for available nodes, and writing the size
-            availFile << curr->offset << "|" << curr->size << '\n';
+            availFile << curr->offset << "|" << curr->size << '\n';  // Write offset and size
             curr = curr->next;
         }
-        availFile.close();  // Ensure to close the file after writing
+        availFile.close();  // Close the file after writing
     }
 
+    // Destructor to clean up the allocated memory
     ~AvailList() {
         while (header) {
             AvailListNode *temp = header;
             header = header->next;
-            delete temp;
+            delete temp;  // Delete each node
         }
     }
-
 };
 
 #endif //HEALTHCAREMANAGEMENTSYSTEM_AVAILLIST_H

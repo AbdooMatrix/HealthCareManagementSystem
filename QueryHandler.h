@@ -14,17 +14,22 @@ using namespace std;
 
 class QueryHandler {
 public:
+    // Constructor initializes the Doctor and Appointment Management Systems
     QueryHandler(DoctorManagementSystem &doctorSys, AppointmentManagementSystem &appointmentSys)
             : doctorSystem(doctorSys), appointmentSystem(appointmentSys) {}
 
+    // Handles user queries by parsing and executing SQL-like queries
     void handleUserQuery() {
         cout << "Enter your query: ";
         cin.ignore();
         string query;
         getline(cin, query);
 
+        // Trim leading and trailing spaces from the query
         trim(query);
-        for(int i = 0 ; i < query.size() ; ++i) {
+
+        // Convert the query to lowercase for case-insensitive comparison
+        for(int i = 0; i < query.size(); ++i) {
             if (query[i] >= 'A' && query[i] <= 'Z') {
                 query[i] = tolower(query[i]);
             }
@@ -35,11 +40,13 @@ public:
             query.pop_back();
         }
 
+        // Validate the query format (must start with 'select' and contain 'from')
         if (query.substr(0, 6) != "select" || query.find("from") == string::npos) {
             cout << "Invalid query format. Please use: SELECT <fields> FROM <table> WHERE <condition>;\n";
             return;
         }
 
+        // Extract parts of the query (fields, table, condition)
         size_t selectPos = query.find("select");
         size_t fromPos = query.find("from");
         size_t wherePos = query.find("where");
@@ -48,6 +55,7 @@ public:
         string table = query.substr(fromPos + 4, (wherePos == string::npos ? query.size() : wherePos) - (fromPos + 4));
         string condition = (wherePos != string::npos) ? query.substr(wherePos + 5) : "";
 
+        // Trim spaces around extracted fields, table, and condition
         trim(fields);
         trim(table);
         trim(condition);
@@ -69,18 +77,16 @@ public:
 
         // Process the query based on table and condition
         if (table == "doctors") {
-            if(isFileEmpty("DoctorPrimaryIndex.txt")){
-                cout << "doctors file is empty insert records first \n" ;
+            if (isFileEmpty("DoctorPrimaryIndex.txt")) {
+                cout << "doctors file is empty, insert records first.\n";
             }
             handleDoctorQuery(fields, condition);
-        }
-        else if (table == "appointments") {
-            if(isFileEmpty("AppointmentPrimaryIndex.txt")){
-                cout << "appointments file is empty insert records first \n" ;
+        } else if (table == "appointments") {
+            if (isFileEmpty("AppointmentPrimaryIndex.txt")) {
+                cout << "appointments file is empty, insert records first.\n";
             }
             handleAppointmentQuery(fields, condition);
-        }
-        else {
+        } else {
             cout << "Invalid table name. Only 'doctors' and 'appointments' are supported.\n";
         }
     }
@@ -89,11 +95,13 @@ private:
     DoctorManagementSystem &doctorSystem;
     AppointmentManagementSystem &appointmentSystem;
 
+    // Checks if a file is empty by opening it in binary mode and checking its size
     bool isFileEmpty(const string& fileName) {
         ifstream file(fileName, std::ios::ate | std::ios::binary); // Open in binary mode at the end
         return file.tellg() == 0; // If tellg() returns 0, the file is empty
     }
 
+    // Trims leading and trailing spaces from a string
     void trim(string &str) {
         if (str.empty()) {
             return; // Handle empty string case
@@ -117,6 +125,7 @@ private:
         }
     }
 
+    // Parses a WHERE condition into key and value parts
     bool parseCondition(const string &condition, string &key, string &value) {
         size_t eqPos = condition.find('=');
         if (eqPos == string::npos) return false;
@@ -132,6 +141,7 @@ private:
         return true;
     }
 
+    // Handles doctor-related queries with or without conditions
     void handleDoctorQuery(const string &fields, const string &condition) {
         if (condition.empty()) {
             handleDoctorNoCondition(fields);
@@ -155,6 +165,7 @@ private:
         }
     }
 
+    // Handles doctor queries with no conditions
     void handleDoctorNoCondition(const string &fields) {
         if (fields == "*" || fields == "all") {
             doctorSystem.printAllDoctors(0);
@@ -169,6 +180,7 @@ private:
         }
     }
 
+    // Handles doctor queries filtered by ID
     void handleDoctorById(const string &fields, const string &id) {
         if (fields == "*" || fields == "all") {
             doctorSystem.printDoctorById(id, 0);  // Assuming this prints all doctor info
@@ -183,6 +195,7 @@ private:
         }
     }
 
+    // Handles doctor queries filtered by Name
     void handleDoctorByName(const string &fields, const string &name) {
         vector<string> doctorIds = doctorSystem.searchDoctorsByName(name);
         if (doctorIds.empty()) {
@@ -205,6 +218,7 @@ private:
         }
     }
 
+    // Handles doctor queries filtered by Address
     void handleDoctorByAddress(const string &fields, const string &address) {
         if (fields == "*" || fields == "all") {
             doctorSystem.printDoctorByAddress(address, 0);
@@ -219,6 +233,7 @@ private:
         }
     }
 
+    // Handles appointment-related queries with or without conditions
     void handleAppointmentQuery(const string &fields, const string &condition) {
         if (condition.empty()) {
             handleAppointmentNoCondition(fields);
@@ -235,14 +250,14 @@ private:
             handleAppointmentById(fields, value);
         } else if (key == "doctorid") {
             handleAppointmentByDoctorId(fields, value);
-        }
-        else if (key == "date") {
+        } else if (key == "date") {
             handleAppointmentByDate(fields, value);
         } else {
             cout << "Invalid WHERE condition. Valid keys for Appointment are 'id'.\n";
         }
     }
 
+    // Handles appointment queries with no conditions
     void handleAppointmentNoCondition(const string &fields) {
         if (fields == "*" || fields == "all") {
             appointmentSystem.printAllAppointments(0);
@@ -257,6 +272,7 @@ private:
         }
     }
 
+    // Handles appointment queries filtered by ID
     void handleAppointmentById(const string &fields, const string &id) {
         PrimaryIndex appointmentPrimaryIndex = appointmentSystem.getAppointmentPrimaryIndex();
         int offset = appointmentPrimaryIndex.binarySearchPrimaryIndex(id);
@@ -278,8 +294,8 @@ private:
         }
     }
 
+    // Handles appointment queries filtered by Doctor ID
     void handleAppointmentByDoctorId(const string &fields, const string &doctorId) {
-        // Assuming a method to search by doctor ID
         vector<string> appointmentIds = appointmentSystem.searchAppointmentsByDoctorID(doctorId);
         if (appointmentIds.empty()) {
             cout << "No appointments found for Doctor ID: " << doctorId << ".\n";
@@ -301,6 +317,7 @@ private:
         }
     }
 
+    // Handles appointment queries filtered by Date
     void handleAppointmentByDate(const string &fields, const string &date) {
         if (fields == "*" || fields == "all") {
             appointmentSystem.printAppointmentByDate(date, 0);
