@@ -29,10 +29,11 @@ void toLower(string &str) {
 
 // Ensures the user presses 'y' to continue
 void checkContinue() {
-    char cont = '0';
-    while (tolower(cont) != 'y') {
+    string cont = "0";
+    while (cont != "y") {
         cout << "Press 'y' or 'Y' to continue: ";
         cin >> cont;
+        toLower(cont);
     }
 }
 
@@ -66,6 +67,7 @@ int main() {
              "8) Print Appointment Info (Appointment ID)\n"
              "9) Write Query\n"
              "10) Print all doctors\n"
+             "11) Print all appointments\n"
              "0) Exit\n"
              "Enter a choice: ";
         cin >> choice;
@@ -187,6 +189,10 @@ int main() {
         }
         else if (choice == 10) {
             doctorSystem.printAllDoctors(0);
+            checkContinue();
+        }
+        else if (choice == 11) {
+            appointmentSystem.printAllAppointments(0);
             checkContinue();
         }
         else {

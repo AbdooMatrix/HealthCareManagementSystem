@@ -369,7 +369,7 @@ public:
         appointments.close();
     }
 
-    static void printAllAppointments(int choice) {
+    void printAllAppointments(int choice) {
         ifstream file("appointments.txt", ios::in);
         if (!file) {
             cerr << "Error opening appointments file.\n";
